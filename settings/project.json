@@ -2,11 +2,22 @@
   "collision-matrix": [
     [
       true
+    ],
+    [
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false
     ]
   ],
   "excluded-modules": [],
   "group-list": [
-    "default"
+    "default",
+    "UI",
+    "BG"
   ],
   "design-resolution-width": 960,
   "design-resolution-height": 640,
@@ -19,7 +30,7 @@
     "height": 640,
     "width": 960
   },
-  "last-module-event-record-time": 0,
+  "last-module-event-record-time": 1606385383477,
   "assets-sort-type": "name",
   "facebook": {
     "appID": "",

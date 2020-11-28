@@ -17,10 +17,20 @@ export default class LevelItem extends cc.Component {
   @property(cc.SpriteFrame)
   currentLvBg: cc.SpriteFrame = null;
 
-  @property()
-  lvNumber: 0;
+  lvInfo: LevelInfo;
+
+  onLoad() {
+    this.node.on(cc.Node.EventType.TOUCH_END, this.goLevel, this);
+  }
+  goLevel() {
+    const { slv, lv, status } = this.lvInfo;
+    if (status != "lock") {
+      cc.director.loadScene(`level_${slv}_${lv}`);
+    }
+  }
 
   public init(lvInfo: LevelInfo) {
+    this.lvInfo = lvInfo;
     const { status, lv } = lvInfo;
     const mapSprite = {
       lock: this.lockLvBg,

@@ -5,7 +5,7 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class LevelItem extends cc.Component {
   @property()
-  slvNumber: 0;
+  slvNumber = 0;
 
   @property(cc.Prefab)
   itemPrefab: cc.Prefab = null;
