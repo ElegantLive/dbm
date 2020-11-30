@@ -1,2 +1,1 @@
-# hello-world
-Hello world new project template.
+for '大冒险'
