@@ -46,24 +46,36 @@ export default class SettleModal extends cc.Component {
     leftBtn.getComponent(cc.Button).target.getComponent(cc.Sprite).spriteFrame =
       type == "win" ? this.blueBtnBg : this.greenBtnBg;
 
-    const nexlLv = getNextLevel();
-    if (!nexlLv && type == "win") {
-      rightBtn.active = false;
-      btnGroup.getComponent(cc.Layout).spacingX = 100;
-      btnGroup.getComponent(cc.Layout).updateLayout();
+    if (type == "win") {
+      const nexlLv = getNextLevel();
+      cc.log(nexlLv);
+      if (!nexlLv) {
+        rightBtn.active = false;
+        btnGroup.getComponent(cc.Layout).spacingX = 100;
+        btnGroup.getComponent(cc.Layout).updateLayout();
+      } else {
+        rightBtn.active = true;
+        rightBtn
+          .getComponent(cc.Button)
+          .target.getComponent(cc.Sprite).spriteFrame = this.greenBtnBg;
+        rightBtn
+          .getComponent(cc.Button)
+          .target.getChildByName("Label")
+          .getComponent(cc.Label).string = "继续";
+
+        rightBtn.getComponent("GameBtn").type = "go_next_level";
+      }
     } else {
       rightBtn.active = true;
       rightBtn
         .getComponent(cc.Button)
-        .target.getComponent(cc.Sprite).spriteFrame =
-        type == "win" ? this.greenBtnBg : this.blueBtnBg;
+        .target.getComponent(cc.Sprite).spriteFrame = this.blueBtnBg;
       rightBtn
         .getComponent(cc.Button)
         .target.getChildByName("Label")
-        .getComponent(cc.Label).string = type == "win" ? "继续" : "再次挑战";
+        .getComponent(cc.Label).string = "再次挑战";
 
-      rightBtn.getComponent("GameBtn").type =
-        type == "win" ? "go_next_level" : "replay";
+      rightBtn.getComponent("GameBtn").type = "replay";
     }
     middleBtn
       .getComponent(cc.Button)

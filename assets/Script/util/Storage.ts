@@ -27,5 +27,5 @@ export const setCfgVal = (key, value) => {
     realVal = value;
   }
 
-  return localStorage.setItem(key, value);
+  return localStorage.setItem(key, realVal);
 };

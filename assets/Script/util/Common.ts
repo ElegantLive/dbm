@@ -1,4 +1,8 @@
-import { getCurrentLevel, getNextLevel } from "../state/Level";
+import {
+  getCurrentLevel,
+  getNextLevel,
+  initCurrentLevel,
+} from "../state/Level";
 
 export const isJsonString = (str) => {
   try {
@@ -61,5 +65,6 @@ export const loadLevelScene = (type: "current" | "next") => {
   }
   if (!lvInfo) return;
 
+  initCurrentLevel(lvInfo);
   cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
 };
