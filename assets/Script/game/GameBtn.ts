@@ -1,4 +1,4 @@
-import { getCurrentLevel, getNextLevel } from "../state/Level";
+import { loadLevelScene, toggleModal } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
 
@@ -23,13 +23,13 @@ export default class GameBtn extends cc.Component {
         cc.director.loadScene("home");
         break;
       case "replay":
-        this.loadLevelScene("current");
+        loadLevelScene("current");
         break;
       case "jump_level":
-        this.loadLevelScene("next");
+        loadLevelScene("next");
         break;
       case "go_next_level":
-        this.loadLevelScene("next");
+        loadLevelScene("next");
         break;
       case "get_reward":
         cc.log("get_reward");
@@ -48,59 +48,21 @@ export default class GameBtn extends cc.Component {
   pauseGame() {
     cc.audioEngine.pauseAll();
     cc.director.pause();
-    this.openModal("pauseContaner");
+    this.openModal("pauseContainer");
   }
 
   resumeGame() {
     cc.director.resume();
     cc.audioEngine.resumeAll();
-    this.closeModal("pauseContaner");
+    this.closeModal("pauseContainer");
   }
 
   closeModal(contanier?: string) {
-    this.toggleModal(contanier, false);
+    toggleModal(contanier, false);
   }
 
   openModal(contanier: string) {
     if (!contanier) return;
-    this.toggleModal(contanier, true);
-  }
-
-  toggleModal(contanier?: string, state?: boolean) {
-    if (!state) state = false;
-
-    if (true == state && !contanier) return;
-
-    const modal = cc.find("Canvas/ui/modal");
-    if (contanier) {
-      const contanierNode = cc.find(contanier, modal);
-      contanierNode.active = state;
-    } else {
-      const tipNode = cc.find("tipsContaner", modal),
-        pauseNode = cc.find("pauseContaner", modal),
-        settleNode = cc.find("settleContaner", modal);
-
-      tipNode.active = state;
-      pauseNode.active = state;
-      settleNode.active = state;
-    }
-    modal.active = state;
-  }
-
-  loadLevelScene(type: "current" | "next") {
-    let lvInfo = null;
-    switch (type) {
-      case "current":
-        lvInfo = getCurrentLevel();
-        break;
-      case "next":
-        lvInfo = getNextLevel();
-        break;
-      default:
-        break;
-    }
-    if (!lvInfo) return;
-
-    cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
+    toggleModal(contanier, true);
   }
 }

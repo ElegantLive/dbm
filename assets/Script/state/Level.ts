@@ -1,7 +1,7 @@
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
 import { LevelInfo } from "../level/LevelItem";
 
-const maxLevel = 11;
+const maxLevel = 1;
 export const LevelKey = "userLevel";
 
 export const initLevel = () => {
@@ -99,13 +99,7 @@ export const getNextLevel = () => {
     nextLv.slv += 1;
   }
 
-  try {
-    cc.director.preloadScene(`level_${nextLv.slv}_${nextLv.lv}`);
-  } catch (e) {
-    return null;
-  }
-
-  return nextLv;
+  return getLevelByLvInfo(nextLv.lv, nextLv.slv);
 };
 
 export const unlockNextLevel = () => {
@@ -128,4 +122,20 @@ export const unlockNextLevel = () => {
   if (lv != newLv) {
     setCfgVal(LevelKey, newLv);
   }
+};
+
+export const getLevelByLvInfo = (lv, slv) => {
+  let lvs = getCfgVal(LevelKey);
+
+  let hasLv = null;
+
+  for (let index = 0; index < lvs.length; index++) {
+    const element = lvs[index];
+    if (element.lv == lv && element.slv == slv) {
+      hasLv = element;
+      break;
+    }
+  }
+
+  return hasLv;
 };

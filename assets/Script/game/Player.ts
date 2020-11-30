@@ -1,3 +1,4 @@
+import { delay } from "../util/Common";
 import CWorld from "./World";
 
 const { ccclass, property } = cc._decorator;
@@ -156,8 +157,6 @@ export default class Player extends cc.Component {
   }
 
   playerUp() {
-    console.log("this.isJumping: " + this.isJumping);
-    console.log("this.jumpCount: " + this.jumpCount);
     if (!this.isJumping && this.jumpCount == 0 && !this.isDead) {
       // 如果活着的没在跳跃状态，并且玩家着地
       // this.player_jump();
@@ -230,7 +229,8 @@ export default class Player extends cc.Component {
     this.touchingNumber--; // 取消一个触碰
   }
 
-  dieJump() {
+  async dieJump() {
+    if (this.isDead) return;
     cc.director.getCollisionManager().enabled = false;
     // cc.audioEngine.play(this.dieAudio, false, 1);
     // this.anim.play("player_die");
@@ -239,15 +239,13 @@ export default class Player extends cc.Component {
     this.isDead = true;
     this._life = 0;
     // this.node.parent.getComponent("camera").isRun = false;
-    this.node.runAction(
-      cc.sequence(
-        cc.delayTime(2.1),
-        cc.callFunc(() => {
-          cc.log("lose");
-          this.node.destroy();
-        })
-      )
-    );
+    await delay(2000);
+    cc.director
+      .getScene()
+      .getChildByName("Canvas")
+      .getComponent("Game")
+      .dispatchFailure(); //dispatchSuccess
+    this.node.destroy();
   }
 
   dispatchSuccess() {
@@ -261,6 +259,11 @@ export default class Player extends cc.Component {
           this.noUpControlPlayer();
           this.noDownControlPlayer();
           this.noLRControlPlayer();
+          cc.director
+            .getScene()
+            .getChildByName("Canvas")
+            .getComponent("Game")
+            .dispatchSuccess();
           cc.log("win");
         })
         .start();

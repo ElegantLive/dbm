@@ -1,3 +1,5 @@
+import { toggleModal } from "../util/Common";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -7,5 +9,10 @@ export default class Game extends cc.Component {
 
   onLoad() {}
 
-  dispatchSuccess() {}
+  dispatchSuccess() {
+    toggleModal("settleContainer", true, true);
+  }
+  dispatchFailure() {
+    toggleModal("settleContainer", true, false);
+  }
 }
