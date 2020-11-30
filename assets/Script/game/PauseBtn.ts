@@ -1,7 +1,7 @@
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Direct extends cc.Component {
+export default class PauseBtn extends cc.Component {
   @property(cc.SpriteFrame)
   pauseSpriteFrame: cc.SpriteFrame = null;
   @property(cc.SpriteFrame)

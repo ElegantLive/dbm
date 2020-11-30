@@ -1,3 +1,5 @@
+import { initCurrentLevel } from "../state/Level";
+
 const { ccclass, property } = cc._decorator;
 
 export interface LevelInfo {
@@ -25,6 +27,7 @@ export default class LevelItem extends cc.Component {
   goLevel() {
     const { slv, lv, status } = this.lvInfo;
     if (status != "lock") {
+      initCurrentLevel(this.lvInfo);
       cc.director.loadScene(`level_${slv}_${lv}`);
     }
   }

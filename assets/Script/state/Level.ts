@@ -1,4 +1,5 @@
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
+import { LevelInfo } from "../level/LevelItem";
 
 const maxLevel = 11;
 export const LevelKey = "userLevel";
@@ -60,4 +61,71 @@ export const getGroupLevel = () => {
   });
 
   return groupLevel;
+};
+
+let currentLevel = {
+  times: 0, // 挑战次数
+  lv: 1, // 小关
+  slv: 1, // 大关
+  status: "lock", // 大关
+  life: 3, // 命
+  reward: 300, // 通关金币奖励
+};
+
+export const initCurrentLevel = (lvInfo: LevelInfo) => {
+  currentLevel = {
+    times: 0, // 挑战次数
+    lv: lvInfo.lv, // 小关
+    slv: lvInfo.slv, // 大关
+    life: 3, // 命
+    reward: 300, // 通关金币奖励
+    status: lvInfo.status, // 大关
+  };
+};
+
+export const getCurrentLevel = () => {
+  return currentLevel;
+};
+
+export const getNextLevel = () => {
+  const current = getCurrentLevel();
+  let nextLv = {
+    lv: current.lv + 1,
+    slv: current.slv,
+  };
+
+  if (nextLv.lv > 6) {
+    nextLv.lv = 1;
+    nextLv.slv += 1;
+  }
+
+  try {
+    cc.director.preloadScene(`level_${nextLv.slv}_${nextLv.lv}`);
+  } catch (e) {
+    return null;
+  }
+
+  return nextLv;
+};
+
+export const unlockNextLevel = () => {
+  const nextLv = getNextLevel();
+  if (!nextLv) return;
+
+  let lv = getCfgVal(LevelKey);
+
+  const newLv = lv.map((item) => {
+    if (
+      item.lv == nextLv.lv &&
+      item.slv == nextLv.slv &&
+      item.status == "lock"
+    ) {
+      item.status = "current";
+    }
+    return item;
+  });
+
+  if (lv != newLv) {
+    setCfgVal(LevelKey, newLv);
+  }
 };

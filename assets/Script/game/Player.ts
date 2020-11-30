@@ -1,15 +1,5 @@
 import CWorld from "./World";
 
-// Learn TypeScript:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -53,6 +43,8 @@ export default class Player extends cc.Component {
   private lose: boolean = false;
   private isWallCollisionCount: number = 0;
   private buttonIsPressed: boolean = false; // 是否按下按键 ｜ 是否操纵
+
+  private winTween = null;
 
   // LIFE-CYCLE CALLBACKS:
 
@@ -144,6 +136,7 @@ export default class Player extends cc.Component {
   }
 
   playerLeft() {
+    if (this.win || this.isDead) return;
     if (this._direction !== -1 && this.jumpCount == 0 && !this.isDead) {
       // this.player_walk();
     }
@@ -153,6 +146,7 @@ export default class Player extends cc.Component {
   }
 
   playerRight() {
+    if (this.win || this.isDead) return;
     if (this._direction !== 1 && this.jumpCount == 0 && !this.isDead) {
       // this.player_walk();
     }
@@ -205,7 +199,11 @@ export default class Player extends cc.Component {
     }
   }
 
-  onCollisionEnterByPrincess(other: cc.Collider, self: cc.Collider) {}
+  onCollisionEnterByPrincess(other: cc.Collider, self: cc.Collider) {
+    this.touchingNumber++; // 增加触碰
+    this.jumpCount = 0; // 清除跳跃
+    this.dispatchSuccess();
+  }
 
   onCollisionEnterByBlock(other: cc.Collider, self: cc.Collider) {
     // 碰到地板，砖头
@@ -232,13 +230,6 @@ export default class Player extends cc.Component {
     this.touchingNumber--; // 取消一个触碰
   }
 
-  turnDown() {
-    this.touchingNumber = 0;
-    this.isFallDown = true;
-    this.isJumping = false;
-    this.jumpCount = 0;
-  }
-
   dieJump() {
     cc.director.getCollisionManager().enabled = false;
     // cc.audioEngine.play(this.dieAudio, false, 1);
@@ -252,10 +243,28 @@ export default class Player extends cc.Component {
       cc.sequence(
         cc.delayTime(2.1),
         cc.callFunc(() => {
+          cc.log("lose");
           this.node.destroy();
         })
       )
     );
+  }
+
+  dispatchSuccess() {
+    if (!this.winTween) {
+      const princess = cc.find("Canvas/Princess");
+      this.winTween = cc
+        .tween(this.node)
+        .to(0.1, { y: princess.y })
+        .call(() => {
+          this.win = true;
+          this.noUpControlPlayer();
+          this.noDownControlPlayer();
+          this.noLRControlPlayer();
+          cc.log("win");
+        })
+        .start();
+    }
   }
 
   update(dt) {
