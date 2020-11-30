@@ -43,16 +43,26 @@ export default class Player extends cc.Component {
   public collisionY: number = 0;
 
   public isDead: boolean = false; // 死亡
-  public isHunker: boolean = true; // 闲置
+  public isHunker: boolean = false; // 闲置
   public isJumping: boolean = false; // 跃起
-  public isFallDown: boolean = false; // 掉落
+  public isFallDown: boolean = true; // 掉落
 
   private jumpCount: number = 0; // 默认无跳跃
   private touchingNumber: number = 0; // 默认无触碰
+  private win: boolean = false;
+  private lose: boolean = false;
   private isWallCollisionCount: number = 0;
   private buttonIsPressed: boolean = false; // 是否按下按键 ｜ 是否操纵
 
   // LIFE-CYCLE CALLBACKS:
+
+  public static _instance: Player = null;
+  public static getInstance() {
+    if (!this._instance) {
+      this._instance = new Player();
+    }
+    return this._instance;
+  }
 
   onLoad() {
     cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -183,6 +193,22 @@ export default class Player extends cc.Component {
   }
 
   onCollisionEnter(other: cc.Collider, self: cc.Collider) {
+    switch (other.tag) {
+      case 1:
+        this.onCollisionEnterByPrincess(other, self);
+        break;
+      case 2:
+        this.onCollisionEnterByBlock(other, self);
+        break;
+      default:
+        break;
+    }
+  }
+
+  onCollisionEnterByPrincess(other: cc.Collider, self: cc.Collider) {}
+
+  onCollisionEnterByBlock(other: cc.Collider, self: cc.Collider) {
+    // 碰到地板，砖头
     this.touchingNumber++; // 增加触碰
     this.jumpCount = 0; // 清除跳跃
     if (this.isJumping) {
@@ -195,6 +221,7 @@ export default class Player extends cc.Component {
       const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
       const pos = self.node.parent.convertToNodeSpaceAR(ws);
       this.node.y = (other.node.height + self.node.height) / 2 + pos.y;
+      this._speed.y = 0;
     }
     if (this.isHunker) {
       return;
@@ -212,7 +239,43 @@ export default class Player extends cc.Component {
     this.jumpCount = 0;
   }
 
+  dieJump() {
+    cc.director.getCollisionManager().enabled = false;
+    // cc.audioEngine.play(this.dieAudio, false, 1);
+    // this.anim.play("player_die");
+    this._speed.y = this.jumpSpeed;
+    this.touchingNumber = 0;
+    this.isDead = true;
+    this._life = 0;
+    // this.node.parent.getComponent("camera").isRun = false;
+    this.node.runAction(
+      cc.sequence(
+        cc.delayTime(2.1),
+        cc.callFunc(() => {
+          this.node.destroy();
+        })
+      )
+    );
+  }
+
   update(dt) {
+    // cc.log(
+    //   this.isFallDown,
+    //   this.isJumping,
+    //   this.isHunker,
+    //   this.jumpCount,
+    //   this.touchingNumber,
+    //   this._speed,
+    //   this.node.x,
+    //   this.node.y
+    // );
+
+    // 游戏胜利或者失败直接取消更新
+    if (this.win || this.lose) return;
+
+    if (this.node.y < -cc.winSize.height / 2 && !this.isDead) {
+      this.dieJump();
+    }
     // y
     if (this.isFallDown || this.isJumping || this.touchingNumber < 1) {
       //  自由下落
@@ -224,9 +287,6 @@ export default class Player extends cc.Component {
       if (this._speed.y < 0 && this.isJumping && !this.isFallDown) {
         this.isFallDown = true;
       }
-    }
-    if (this.isHunker) {
-      this._speed.y = 0;
     }
 
     // x
