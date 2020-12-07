@@ -1,7 +1,7 @@
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
 import { LevelInfo } from "../level/LevelItem";
 
-const maxLevel = 2;
+const maxLevel = 5;
 export const LevelKey = "userLevel";
 
 export const initLevel = () => {
@@ -26,15 +26,12 @@ export const initLevel = () => {
   if (currentLevelState.length < maxLevel) {
     // 需要加关卡
     let level = currentLevelState;
-    const lastLevel = currentLevelState[currentLevelState.length - 1];
-    for (let index = currentLevelState.length - 1; index < maxLevel; index++) {
+    for (let index = currentLevelState.length; index < maxLevel; index++) {
       const slv = Math.floor(index / 6) + 1;
       const lv = Math.floor(index % 6) + 1;
       let status = "lock";
-      if (index == currentLevelState.length - 1) {
-        if (lastLevel.status == "pass") {
-          status = "current";
-        }
+      if (level[currentLevelState.length - 1].status == "pass") {
+        status = "current";
       }
       const item = {
         lv,

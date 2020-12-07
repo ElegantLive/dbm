@@ -31,7 +31,8 @@ export default class Player extends cc.Component {
   public isFallDown: boolean = true; // 掉落
 
   private jumpCount: boolean = false; // 默认无跳跃
-  private touchingNumber: boolean = false; // 默认无触碰
+  // private touchingNumber: boolean = false; // 默认无触碰
+  private touchingNumber: number = 0; // 默认无触碰
   private win: boolean = false;
   private lose: boolean = false;
   private isWallCollisionCount: number = 0;
@@ -195,35 +196,20 @@ export default class Player extends cc.Component {
 
   onBeginContact(
     contact: cc.PhysicsContact,
-    self: cc.Collider,
-    other: cc.Collider
+    self: cc.BoxCollider,
+    other: cc.BoxCollider
   ) {
     switch (other.tag) {
-      case 1:
-        this.onCollisionEnterByPrincess(other, self);
-        break;
-      case 2:
-        this.onCollisionEnterByBlock(other, self);
-        break;
-      case 3:
-        this.onCollisionEnterByBlockReward(other, self);
-        break;
-      case 4:
-        this.onCollisionEnterByReward(other, self);
-        break;
-      case 5:
-        this.onCollisionEnterBytricker(other, self);
-        break;
       case 6:
         // 直接死亡
-        this.onCollisionEnterBytricker(other, self);
+        this.onCollisionEnterByHorrible(other, self);
         break;
       default:
         break;
     }
   }
 
-  onCollisionEnter(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnter(other: cc.BoxCollider, self: cc.BoxCollider) {
     switch (other.tag) {
       case 1:
         this.onCollisionEnterByPrincess(other, self);
@@ -242,31 +228,73 @@ export default class Player extends cc.Component {
         break;
       case 6:
         // 直接死亡
-        this.onCollisionEnterBytricker(other, self);
+        this.onCollisionEnterByHorrible(other, self);
+        break;
+      case 7:
+        // 不受力死亡
+        this.onCollisionEnterByNation(other, self);
         break;
       default:
         break;
     }
   }
-  onCollisionEnterBytricker(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnterByNation(other: cc.BoxCollider, self: cc.BoxCollider) {
+    cc.director.getCollisionManager().enabled = false;
+  }
+  onCollisionEnterBytricker(other: cc.BoxCollider, self: cc.BoxCollider) {
     other.node.opacity = 255;
     this.dieJump();
   }
 
-  onCollisionEnterByHorrible(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnterByHorrible(other: cc.BoxCollider, self: cc.BoxCollider) {
     this.dieJump();
   }
 
-  onCollisionEnterByPrincess(other: cc.Collider, self: cc.Collider) {
-    this.touchingNumber = true; // 增加触碰
-    this.jumpCount = false; // 清除跳跃
+  onCollisionEnterByPrincess(other: cc.BoxCollider, self: cc.BoxCollider) {
+    // this.touchingNumber = true; // 增加触碰
+    this.touchingNumber++;
     this.dispatchSuccess();
   }
 
-  onCollisionEnterByBlock(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnterByBlock(other: cc.BoxCollider, self: cc.BoxCollider) {
     // 碰到地板，砖头
-    this.touchingNumber = true; // 增加触碰
+    // this.touchingNumber = true; // 增加触碰
+    this.touchingNumber++;
     this.jumpCount = false; // 清除跳跃
+
+    var otherAabb = other.world.aabb;
+    // 上一次计算的碰撞组件的 aabb 碰撞框
+    var otherPreAabb = other.world.preAabb.clone();
+    var selfAabb = self.world.aabb;
+    var selfPreAabb = self.world.preAabb.clone();
+    selfPreAabb.x = selfAabb.x;
+    otherPreAabb.x = otherAabb.x;
+
+    if (cc.Intersection.rectRect(selfPreAabb, otherPreAabb)) {
+      if (this._speed.x > 0 && selfPreAabb.xMax > otherPreAabb.xMin) {
+        // this.collisionX = 1;
+        // this._speed.x == 0;
+      }
+
+      if (this._speed.x < 0 && selfPreAabb.xMin < otherPreAabb.xMax) {
+        // this.collisionX = -1;
+        // this._speed.x == 0;
+      }
+    }
+    selfPreAabb.y = selfAabb.y;
+    otherPreAabb.y = otherAabb.y;
+    // if (cc.Intersection.rectRect(selfPreAabb, otherPreAabb)) {
+    //   if (
+    //     this._speed.y < 0 &&
+    //     (selfPreAabb.yMax < otherPreAabb.yMax ||
+    //       selfPreAabb.yMin < otherPreAabb.yMin)
+    //   ) {
+    //     const pre = selfPreAabb.xMax < otherPreAabb.xMax ? 0.2 : -0.2;
+    //     const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
+    //     const pos = self.node.parent.convertToNodeSpaceAR(ws);
+    //     this.node.x = (other.node.width + self.node.width) / 2 + pos.x - pre;
+    //   }
+    // }
 
     if (this.isFallDown) {
       this.isJumping = false;
@@ -276,7 +304,11 @@ export default class Player extends cc.Component {
       const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
       const pos = self.node.parent.convertToNodeSpaceAR(ws);
       // this.node.y = (other.node.height + self.node.height) / 2 + pos.y - 0.1;
-      this._speed.y = 0;
+      if (cc.Intersection.rectRect(selfPreAabb, otherPreAabb)) {
+        if (this._speed.y < 0 && selfPreAabb.yMin > otherPreAabb.yMin) {
+          this._speed.y = 0;
+        }
+      }
     }
     if (this.isJumping) {
       this.isJumping = false;
@@ -289,7 +321,7 @@ export default class Player extends cc.Component {
     }
   }
 
-  onCollisionEnterByBlockReward(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnterByBlockReward(other: cc.BoxCollider, self: cc.BoxCollider) {
     const sc = other.node.getComponent("CollisionReward");
     if (sc) {
       if (this.isJumping) {
@@ -299,17 +331,21 @@ export default class Player extends cc.Component {
     this.onCollisionEnterByBlock(other, self);
   }
 
-  onCollisionEnterByReward(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnterByReward(other: cc.BoxCollider, self: cc.BoxCollider) {
     const sc = other.node.getComponent("CollisionReward");
     if (sc) {
       sc.dispachGot();
     }
   }
 
-  onCollisionExit(other: cc.Collider, self: cc.Collider) {
+  onCollisionExit(other: cc.BoxCollider, self: cc.BoxCollider) {
     const map = [1, 2, 3];
+    // 清除穿模限制
+    this.collisionX = 0;
+    this.collisionY = 0;
     if (map.indexOf(other.tag) > -1) {
-      this.touchingNumber = false;
+      // this.touchingNumber = false;
+      this.touchingNumber--;
     }
   }
 
@@ -320,7 +356,8 @@ export default class Player extends cc.Component {
     // cc.audioEngine.play(this.dieAudio, false, 1);
     // this.anim.play("player_die");
     this._speed.y = this.jumpSpeed;
-    this.touchingNumber = false;
+    // this.touchingNumber = false;
+    this.touchingNumber--;
     this.isHunker = false;
     this.isFallDown = true;
     this.isJumping = false;
@@ -339,6 +376,7 @@ export default class Player extends cc.Component {
   dispatchSuccess() {
     if (!this.winTween) {
       const princess = cc.find("Canvas/Princess");
+      this.animationPlay("player_stand");
       this.winTween = cc
         .tween(this.node)
         .to(0.1, { y: princess.y })
@@ -365,11 +403,11 @@ export default class Player extends cc.Component {
     if (this.node.y < -(cc.winSize.height / 2 + 100) && !this.isDead) {
       this.dieJump();
     }
+
     if (this.touchingNumber) {
     } else {
       // y
       if (this.isFallDown || this.isJumping || !this.touchingNumber) {
-        console.log(this.isFallDown, this.isJumping, !this.touchingNumber);
         //  自由下落
         this._speed.y += CWorld.G * dt;
         if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
@@ -409,9 +447,9 @@ export default class Player extends cc.Component {
       }
     }
 
-    // if (this._speed.x * this.collisionX > 0) {
-    //   this._speed.x = 0;
-    // }
+    if (this._speed.x * this.collisionX > 0) {
+      this._speed.x = 0;
+    }
 
     this.node.x += this._speed.x * dt * CWorld.AddSpeed;
     this.node.y += this._speed.y * dt;
