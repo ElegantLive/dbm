@@ -1,5 +1,7 @@
 {
-  "excludeScenes": [],
+  "excludeScenes": [
+    "54363615-f7bb-4c1a-bc44-bfe203c1e85d"
+  ],
   "orientation": {
     "landscapeLeft": true,
     "landscapeRight": true,
@@ -8,7 +10,7 @@
   },
   "packageName": "org.cocos2d.helloworld",
   "startScene": "03e22eda-5097-4e06-b0df-395caa3f0714",
-  "title": "hello_world",
+  "title": "dmx",
   "webOrientation": "auto",
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
@@ -17,7 +19,7 @@
   "optimizeHotUpdate": false,
   "md5Cache": true,
   "nativeMd5Cache": true,
-  "encryptJs": true,
+  "encryptJs": false,
   "xxteaKey": "fb74c30b-c0b6-4f",
   "zipCompressJs": true,
   "fb-instant-games": {},
@@ -49,5 +51,6 @@
     "scheme": "https",
     "skipRecord": false
   },
-  "appBundle": false
+  "appBundle": false,
+  "includeSDKBox": false
 }

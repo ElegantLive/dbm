@@ -1,0 +1,43 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "princess",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.06666666666666667,
+  "sample": 60,
+  "speed": 0.1,
+  "wrapMode": 2,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "746de58e-a1cb-4a8b-b2f2-28a223f59085"
+            }
+          },
+          {
+            "frame": 0.016666666666666666,
+            "value": {
+              "__uuid__": "6b8e74ae-9b95-4d3f-9b4b-4393b20cb11c"
+            }
+          },
+          {
+            "frame": 0.03333333333333333,
+            "value": {
+              "__uuid__": "422b167c-9991-475a-bd1c-dd282ea01ab7"
+            }
+          },
+          {
+            "frame": 0.05,
+            "value": {
+              "__uuid__": "b6b66ea6-237e-4f78-be31-4a1175d0fe12"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

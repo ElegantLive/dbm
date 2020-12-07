@@ -68,3 +68,9 @@ export const loadLevelScene = (type: "current" | "next") => {
   initCurrentLevel(lvInfo);
   cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
 };
+
+export const getDistance = (start, end) => {
+  var pos = cc.v2(start.x - end.x, start.y - end.y);
+  var dis = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.y, 2));
+  return dis;
+};

@@ -20,24 +20,31 @@ export default class GameBtn extends cc.Component {
         this.resumeGame();
         break;
       case "home":
+        this.resume();
         cc.director.loadScene("home");
         break;
       case "replay":
+        this.resume();
         loadLevelScene("current");
         break;
       case "jump_level":
+        this.resume();
         loadLevelScene("next");
         break;
       case "go_next_level":
+        this.resume();
         loadLevelScene("next");
         break;
       case "get_reward":
+        this.resume();
         cc.log("get_reward");
         break;
       case "closeModal":
+        this.resume();
         this.closeModal();
         break;
       case "getTips":
+        this.resume();
         cc.log("getTips");
         break;
       default:
@@ -52,9 +59,13 @@ export default class GameBtn extends cc.Component {
   }
 
   resumeGame() {
+    this.resume();
+    this.closeModal("pauseContainer");
+  }
+
+  resume() {
     cc.director.resume();
     cc.audioEngine.resumeAll();
-    this.closeModal("pauseContainer");
   }
 
   closeModal(contanier?: string) {

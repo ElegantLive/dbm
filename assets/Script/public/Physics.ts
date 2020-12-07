@@ -6,7 +6,7 @@ export default class Physics extends cc.Component {
   debug = false;
 
   @property()
-  gravity: cc.Vec2 = cc.v2(0, -300);
+  gravity: cc.Vec2 = cc.v2(0, -1100);
 
   onLoad() {
     this.initPhysics();

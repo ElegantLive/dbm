@@ -3,25 +3,17 @@ import CWorld from "./World";
 
 const { ccclass, property } = cc._decorator;
 
+type PlayerAnimationMapKey =
+  | "player_run"
+  | "player_die"
+  | "player_stand"
+  | "player_fall"
+  | "player_jump";
+
 @ccclass
 export default class Player extends cc.Component {
-  @property(cc.Animation)
-  anim: cc.Animation = null;
-
   @property()
   public maxSpeedV2: cc.Vec2 = new cc.Vec2(0, 0);
-
-  @property({ type: cc.AudioClip })
-  dieAudio: cc.AudioClip = null;
-
-  @property({ type: cc.AudioClip })
-  jumpAudio: cc.AudioClip = null;
-
-  @property({ type: cc.AudioClip })
-  player_decrease_Audio: cc.AudioClip = null;
-
-  @property({ type: cc.AudioClip })
-  hit_block_Audio: cc.AudioClip = null;
 
   @property()
   jumpSpeed: number = 0;
@@ -38,8 +30,8 @@ export default class Player extends cc.Component {
   public isJumping: boolean = false; // 跃起
   public isFallDown: boolean = true; // 掉落
 
-  private jumpCount: number = 0; // 默认无跳跃
-  private touchingNumber: number = 0; // 默认无触碰
+  private jumpCount: boolean = false; // 默认无跳跃
+  private touchingNumber: boolean = false; // 默认无触碰
   private win: boolean = false;
   private lose: boolean = false;
   private isWallCollisionCount: number = 0;
@@ -91,6 +83,7 @@ export default class Player extends cc.Component {
   }
 
   onKeyUp(event) {
+    if (this.win || this.isDead) return;
     switch (event.keyCode) {
       case cc.macro.KEY.a:
       case cc.macro.KEY.left:
@@ -110,7 +103,8 @@ export default class Player extends cc.Component {
   }
 
   noDownControlPlayer() {
-    if (this.touchingNumber === 0) {
+    if (this.win || this.isDead) return;
+    if (!this.touchingNumber) {
       return;
     }
     if (!this.isDead) {
@@ -124,8 +118,10 @@ export default class Player extends cc.Component {
   }
 
   noLRControlPlayer() {
+    if (this.win || this.isDead) return;
     this._direction = 0;
-    if (!this.isDead && this.jumpCount == 0) {
+    this.animationPlay("player_stand");
+    if (!this.isDead && !this.jumpCount) {
       //jumpCount 跳跃次数 落地为0 落地之后才可以再跳
       // this.player_idle();
     }
@@ -133,13 +129,15 @@ export default class Player extends cc.Component {
   }
 
   noUpControlPlayer() {
+    if (this.win || this.isDead) return;
     this.isJumping = true;
   }
 
   playerLeft() {
     if (this.win || this.isDead) return;
-    if (this._direction !== -1 && this.jumpCount == 0 && !this.isDead) {
+    if (this._direction !== -1 && !this.jumpCount && !this.isDead) {
       // this.player_walk();
+      this.animationPlay("player_run");
     }
     this.buttonIsPressed = true;
     this.turnLeft();
@@ -148,8 +146,9 @@ export default class Player extends cc.Component {
 
   playerRight() {
     if (this.win || this.isDead) return;
-    if (this._direction !== 1 && this.jumpCount == 0 && !this.isDead) {
+    if (this._direction !== 1 && !this.jumpCount && !this.isDead) {
       // this.player_walk();
+      this.animationPlay("player_run");
     }
     this.buttonIsPressed = true;
     this.turnRight();
@@ -157,24 +156,33 @@ export default class Player extends cc.Component {
   }
 
   playerUp() {
-    if (!this.isJumping && this.jumpCount == 0 && !this.isDead) {
+    if (this.win || this.isDead) return;
+    if (!this.isJumping && !this.jumpCount && !this.isDead) {
       // 如果活着的没在跳跃状态，并且玩家着地
-      // this.player_jump();
+      this.animationPlay("player_jump");
       this._speed.y = this.jumpSpeed;
       this.isJumping = true;
       this.isHunker = false;
-      this.jumpCount++;
+      this.jumpCount = true;
     }
   }
 
   playerDown() {
-    if (this.touchingNumber === 0) {
+    if (this.win || this.isDead) return;
+    if (!this.touchingNumber) {
       return;
     }
     if (!this.isHunker && !this.isDead) {
       // this.player_hunker();
       this.isHunker = true;
     }
+  }
+
+  animationPlay(key: PlayerAnimationMapKey) {
+    const anim = this.node.getComponent(cc.Animation);
+
+    anim.pause();
+    anim.play(key);
   }
 
   turnLeft() {
@@ -185,6 +193,36 @@ export default class Player extends cc.Component {
     this.node.scaleX = Math.abs(this.node.scaleX);
   }
 
+  onBeginContact(
+    contact: cc.PhysicsContact,
+    self: cc.Collider,
+    other: cc.Collider
+  ) {
+    switch (other.tag) {
+      case 1:
+        this.onCollisionEnterByPrincess(other, self);
+        break;
+      case 2:
+        this.onCollisionEnterByBlock(other, self);
+        break;
+      case 3:
+        this.onCollisionEnterByBlockReward(other, self);
+        break;
+      case 4:
+        this.onCollisionEnterByReward(other, self);
+        break;
+      case 5:
+        this.onCollisionEnterBytricker(other, self);
+        break;
+      case 6:
+        // 直接死亡
+        this.onCollisionEnterBytricker(other, self);
+        break;
+      default:
+        break;
+    }
+  }
+
   onCollisionEnter(other: cc.Collider, self: cc.Collider) {
     switch (other.tag) {
       case 1:
@@ -193,49 +231,99 @@ export default class Player extends cc.Component {
       case 2:
         this.onCollisionEnterByBlock(other, self);
         break;
+      case 3:
+        this.onCollisionEnterByBlockReward(other, self);
+        break;
+      case 4:
+        this.onCollisionEnterByReward(other, self);
+        break;
+      case 5:
+        this.onCollisionEnterBytricker(other, self);
+        break;
+      case 6:
+        // 直接死亡
+        this.onCollisionEnterBytricker(other, self);
+        break;
       default:
         break;
     }
   }
+  onCollisionEnterBytricker(other: cc.Collider, self: cc.Collider) {
+    other.node.opacity = 255;
+    this.dieJump();
+  }
+
+  onCollisionEnterByHorrible(other: cc.Collider, self: cc.Collider) {
+    this.dieJump();
+  }
 
   onCollisionEnterByPrincess(other: cc.Collider, self: cc.Collider) {
-    this.touchingNumber++; // 增加触碰
-    this.jumpCount = 0; // 清除跳跃
+    this.touchingNumber = true; // 增加触碰
+    this.jumpCount = false; // 清除跳跃
     this.dispatchSuccess();
   }
 
   onCollisionEnterByBlock(other: cc.Collider, self: cc.Collider) {
     // 碰到地板，砖头
-    this.touchingNumber++; // 增加触碰
-    this.jumpCount = 0; // 清除跳跃
+    this.touchingNumber = true; // 增加触碰
+    this.jumpCount = false; // 清除跳跃
+
+    if (this.isFallDown) {
+      this.isJumping = false;
+      this.isFallDown = false;
+      this.isHunker = true;
+      this.animationPlay("player_stand");
+      const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
+      const pos = self.node.parent.convertToNodeSpaceAR(ws);
+      // this.node.y = (other.node.height + self.node.height) / 2 + pos.y - 0.1;
+      this._speed.y = 0;
+    }
     if (this.isJumping) {
       this.isJumping = false;
       this.isFallDown = true;
-    }
-    if (this.isFallDown) {
-      this.isFallDown = false;
-      this.isHunker = true;
-      const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
-      const pos = self.node.parent.convertToNodeSpaceAR(ws);
-      this.node.y = (other.node.height + self.node.height) / 2 + pos.y;
-      this._speed.y = 0;
+      this.animationPlay("player_jump");
+      this._speed.y = -this._speed.y;
     }
     if (this.isHunker) {
       return;
     }
   }
 
+  onCollisionEnterByBlockReward(other: cc.Collider, self: cc.Collider) {
+    const sc = other.node.getComponent("CollisionReward");
+    if (sc) {
+      if (this.isJumping) {
+        sc.dispachGot();
+      }
+    }
+    this.onCollisionEnterByBlock(other, self);
+  }
+
+  onCollisionEnterByReward(other: cc.Collider, self: cc.Collider) {
+    const sc = other.node.getComponent("CollisionReward");
+    if (sc) {
+      sc.dispachGot();
+    }
+  }
+
   onCollisionExit(other: cc.Collider, self: cc.Collider) {
-    this.touchingNumber--; // 取消一个触碰
+    const map = [1, 2, 3];
+    if (map.indexOf(other.tag) > -1) {
+      this.touchingNumber = false;
+    }
   }
 
   async dieJump() {
     if (this.isDead) return;
+    this.animationPlay("player_die");
     cc.director.getCollisionManager().enabled = false;
     // cc.audioEngine.play(this.dieAudio, false, 1);
     // this.anim.play("player_die");
     this._speed.y = this.jumpSpeed;
-    this.touchingNumber = 0;
+    this.touchingNumber = false;
+    this.isHunker = false;
+    this.isFallDown = true;
+    this.isJumping = false;
     this.isDead = true;
     this._life = 0;
     // this.node.parent.getComponent("camera").isRun = false;
@@ -271,33 +359,34 @@ export default class Player extends cc.Component {
   }
 
   update(dt) {
-    // cc.log(
-    //   this.isFallDown,
-    //   this.isJumping,
-    //   this.isHunker,
-    //   this.jumpCount,
-    //   this.touchingNumber,
-    //   this._speed,
-    //   this.node.x,
-    //   this.node.y
-    // );
-
     // 游戏胜利或者失败直接取消更新
     if (this.win || this.lose) return;
 
-    if (this.node.y < -cc.winSize.height / 2 && !this.isDead) {
+    if (this.node.y < -(cc.winSize.height / 2 + 100) && !this.isDead) {
       this.dieJump();
     }
-    // y
-    if (this.isFallDown || this.isJumping || this.touchingNumber < 1) {
-      //  自由下落
-      this._speed.y += CWorld.G * dt;
-      if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
-        this._speed.y =
-          this._speed.y > 0 ? this.maxSpeedV2.y : -this.maxSpeedV2.y;
-      }
-      if (this._speed.y < 0 && this.isJumping && !this.isFallDown) {
-        this.isFallDown = true;
+    if (this.touchingNumber) {
+    } else {
+      // y
+      if (this.isFallDown || this.isJumping || !this.touchingNumber) {
+        console.log(this.isFallDown, this.isJumping, !this.touchingNumber);
+        //  自由下落
+        this._speed.y += CWorld.G * dt;
+        if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
+          this._speed.y =
+            this._speed.y > 0 ? this.maxSpeedV2.y : -this.maxSpeedV2.y;
+        }
+        if (this._speed.y < 0 && this.isJumping && !this.isFallDown) {
+          this.isFallDown = true;
+          this.isJumping = false;
+          this.animationPlay("player_fall");
+        }
+        if (this.isHunker && this._speed.y < 0 && !this.isFallDown) {
+          this.animationPlay("player_fall");
+          this.isHunker = false;
+          this.isFallDown = true;
+          this.isJumping = false;
+        }
       }
     }
 
