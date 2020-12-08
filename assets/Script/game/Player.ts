@@ -370,7 +370,11 @@ export default class Player extends cc.Component {
       this.isJumping = false;
       this.isFallDown = false;
       this.isHunker = true;
-      this.animationPlay("player_stand");
+      if (this.buttonIsPressed) {
+        this.animationPlay("player_run");
+      } else {
+        this.animationPlay("player_stand");
+      }
     }
     if (this.isJumping) {
       this.isJumping = false;
@@ -394,9 +398,11 @@ export default class Player extends cc.Component {
   }
 
   onCollisionEnterByReward(other: cc.BoxCollider, self: cc.BoxCollider) {
-    const sc = other.node.getComponent("CollisionReward");
-    if (sc) {
-      sc.dispachGot();
+    if (this.isJumping) {
+      const sc = other.node.getComponent("CollisionReward");
+      if (sc) {
+        sc.dispachGot();
+      }
     }
   }
 
@@ -471,29 +477,24 @@ export default class Player extends cc.Component {
       this.dieJump();
     }
 
-    if (this.touchingNumber) {
-    } else {
-      // y
-      if (this.isFallDown || this.isJumping || !this.touchingNumber) {
-        //  自由下落
-        this._speed.y += CWorld.G * dt;
-        if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
-          if (!this.isDead) {
-            this._speed.y =
-              this._speed.y > 0 ? this.maxSpeedV2.y : -this.maxSpeedV2.y;
-          }
-        }
-        if (this._speed.y < 0 && this.isJumping && !this.isFallDown) {
-          this.isFallDown = true;
-          this.isJumping = false;
-          this.animationPlay("player_fall");
-        }
-        if (this.isHunker && this._speed.y < 0 && !this.isFallDown) {
-          this.animationPlay("player_fall");
-          this.isHunker = false;
-          this.isFallDown = true;
-          this.isJumping = false;
-        }
+    // y
+    if (this.isFallDown || this.isJumping || this.touchingNumber < 1) {
+      //  自由下落
+      this._speed.y += CWorld.G * dt;
+      if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
+        this._speed.y =
+          this._speed.y > 0 ? this.maxSpeedV2.y : -this.maxSpeedV2.y;
+      }
+      if (this._speed.y < 0 && this.isJumping && !this.isFallDown) {
+        this.isFallDown = true;
+        this.isJumping = false;
+        this.animationPlay("player_fall");
+      }
+      if (this.isHunker && this._speed.y < 0 && !this.isFallDown) {
+        this.animationPlay("player_fall");
+        this.isHunker = false;
+        this.isFallDown = true;
+        this.isJumping = false;
       }
     }
 
@@ -519,7 +520,7 @@ export default class Player extends cc.Component {
     if (this._speed.x * this.dir.x > 0) {
       this._speed.x = 0;
     }
-    console.log(this._speed.y);
+    // console.log(this._speed.y);
 
     this.node.x += this._speed.x * dt * CWorld.AddSpeed;
     this.node.y += this._speed.y * dt;

@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "6c98c1dd-345a-49ee-98bb-e741916858ba",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 197,
+  "height": 152,
+  "platformSettings": {},
+  "subMetas": {
+    "funnyCloud": {
+      "ver": "1.0.4",
+      "uuid": "a6a26428-d4f6-4520-9063-8a856a493ba5",
+      "rawTextureUuid": "6c98c1dd-345a-49ee-98bb-e741916858ba",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 197,
+      "height": 152,
+      "rawWidth": 197,
+      "rawHeight": 152,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

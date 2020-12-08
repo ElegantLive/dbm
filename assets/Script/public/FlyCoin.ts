@@ -3,7 +3,7 @@ import { increaseCoin } from "../state/User";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class Direct extends cc.Component {
+export default class FlyCoin extends cc.Component {
   onLoad() {
     // this.initAction();
   }
@@ -34,8 +34,8 @@ export default class Direct extends cc.Component {
     cc.tween(this.node)
       .parallel(scaleAction, upAction)
       .call(() => {
-        console.log("over");
         increaseCoin(1);
+        this.node.destroy();
       })
       .start();
   }
