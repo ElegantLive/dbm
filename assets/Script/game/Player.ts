@@ -38,6 +38,8 @@ export default class Player extends cc.Component {
   private isWallCollisionCount: number = 0;
   private buttonIsPressed: boolean = false; // 是否按下按键 ｜ 是否操纵
 
+  public dir = { x: 0, y: 0 };
+
   private winTween = null;
 
   // LIFE-CYCLE CALLBACKS:
@@ -243,7 +245,7 @@ export default class Player extends cc.Component {
   }
   onCollisionEnterBytricker(other: cc.BoxCollider, self: cc.BoxCollider) {
     other.node.opacity = 255;
-    this.dieJump();
+    this.onCollisionEnterByHorrible(other, self);
   }
 
   onCollisionEnterByHorrible(other: cc.BoxCollider, self: cc.BoxCollider) {
@@ -262,60 +264,120 @@ export default class Player extends cc.Component {
     this.touchingNumber++;
     this.jumpCount = false; // 清除跳跃
 
-    var otherAabb = other.world.aabb;
-    // 上一次计算的碰撞组件的 aabb 碰撞框
-    var otherPreAabb = other.world.preAabb.clone();
-    var selfAabb = self.world.aabb;
-    var selfPreAabb = self.world.preAabb.clone();
-    selfPreAabb.x = selfAabb.x;
-    otherPreAabb.x = otherAabb.x;
+    this.dir = { x: 0, y: 0 }; // 记录碰撞方向
+    let otherR = other.world.aabb.xMax; // 碰撞物的右边x
+    let otherL = other.world.aabb.xMin; // 碰撞物的左边x
+    let otherU = other.world.aabb.yMax; // 碰撞物的上边x
+    let otherD = other.world.aabb.yMin; // 碰撞物的下边x
 
-    if (cc.Intersection.rectRect(selfPreAabb, otherPreAabb)) {
-      if (this._speed.x > 0 && selfPreAabb.xMax > otherPreAabb.xMin) {
-        // this.collisionX = 1;
-        // this._speed.x == 0;
+    let myR = self.world.aabb.xMax; // 我的右边x
+    let myL = self.world.aabb.xMin; // 我的左边x
+    let myU = self.world.aabb.yMax; // 我上边x
+    let myD = self.world.aabb.yMin; // 我的下边x
+
+    if (myR - otherL >= 0 && myR - otherL < 60) {
+      // 我的最大x大于他的最小x，右侧撞到
+      this.dir.x = 1;
+      // console.log("myR - otherL");
+      // console.log(myR - otherL);
+    }
+    if (otherR - myL >= 0 && otherR - myL < 60) {
+      // 他的最大x大于我的最小x，左侧撞到
+      this.dir.x = -1;
+      // console.log("otherR - myL");
+      // console.log(otherR - myL);
+    }
+
+    if (this.dir.x != 0) {
+      // 检查是否清除x
+      if (myU - otherD >= 0 && myU - otherD < 5) {
+        // console.log("clean x");
+        this.dir.x = 0;
       }
-
-      if (this._speed.x < 0 && selfPreAabb.xMin < otherPreAabb.xMax) {
-        // this.collisionX = -1;
-        // this._speed.x == 0;
+      if (otherU - myD >= 0 && otherU - myD < 5) {
+        // console.log("clean x");
+        this.dir.x = 0;
       }
     }
-    selfPreAabb.y = selfAabb.y;
-    otherPreAabb.y = otherAabb.y;
-    // if (cc.Intersection.rectRect(selfPreAabb, otherPreAabb)) {
-    //   if (
-    //     this._speed.y < 0 &&
-    //     (selfPreAabb.yMax < otherPreAabb.yMax ||
-    //       selfPreAabb.yMin < otherPreAabb.yMin)
-    //   ) {
-    //     const pre = selfPreAabb.xMax < otherPreAabb.xMax ? 0.2 : -0.2;
-    //     const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
-    //     const pos = self.node.parent.convertToNodeSpaceAR(ws);
-    //     this.node.x = (other.node.width + self.node.width) / 2 + pos.x - pre;
-    //   }
-    // }
+
+    if (myU - otherD >= 0 && myU - otherD < 60) {
+      // 我的最大y大于他的最小y，上侧撞到
+      this.dir.y = 1;
+      // console.log("myU - otherD");
+      // console.log(myU - otherD);
+    }
+
+    if (otherU - myD >= 0 && otherU - myD < 60) {
+      // 他的最大y大于我的最小y，下侧撞到
+      this.dir.y = -1;
+      // console.log("otherU - myD");
+      // console.log(otherU - myD);
+    }
+
+    if (this.dir.y) {
+      // 检查是否清除y
+      if (myR - otherL >= 0 && myR - otherL < 5) {
+        // console.log("clean y");
+        this.dir.y = 0;
+      }
+      if (otherR - myL >= 0 && otherR - myL < 5) {
+        // console.log("clean y");
+        this.dir.y = 0;
+      }
+    }
+
+    if (this._speed.x > 0) {
+      if (this.dir.x > 0) {
+        this._speed.x = 0;
+        const pre = 1;
+        const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
+        const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        this.node.x = -(other.node.width + self.node.width) / 2 + pos.x + pre;
+      }
+    }
+
+    if (this._speed.x < 0) {
+      if (this.dir.x < 0) {
+        this._speed.x = 0;
+        const pre = -1;
+        const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
+        const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        this.node.x = (other.node.width + self.node.width) / 2 + pos.x + pre;
+      }
+    }
+
+    if (this._speed.y > 0) {
+      if (this.dir.y > 0) {
+        this._speed.y = -this._speed.y;
+
+        const pre = 4;
+        const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
+        const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        this.node.y = -(other.node.height + self.node.height) / 2 + pos.y + pre;
+      }
+    }
+    if (this._speed.y < 0) {
+      if (this.dir.y < 0) {
+        this._speed.y = 0;
+        const pre = -4;
+        const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
+        const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        this.node.y = (other.node.height + self.node.height) / 2 + pos.y + pre;
+      }
+    }
 
     if (this.isFallDown) {
       this.isJumping = false;
       this.isFallDown = false;
       this.isHunker = true;
       this.animationPlay("player_stand");
-      const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
-      const pos = self.node.parent.convertToNodeSpaceAR(ws);
-      // this.node.y = (other.node.height + self.node.height) / 2 + pos.y - 0.1;
-      if (cc.Intersection.rectRect(selfPreAabb, otherPreAabb)) {
-        if (this._speed.y < 0 && selfPreAabb.yMin > otherPreAabb.yMin) {
-          this._speed.y = 0;
-        }
-      }
     }
     if (this.isJumping) {
       this.isJumping = false;
       this.isFallDown = true;
       this.animationPlay("player_jump");
-      this._speed.y = -this._speed.y;
     }
+
     if (this.isHunker) {
       return;
     }
@@ -343,13 +405,14 @@ export default class Player extends cc.Component {
     // 清除穿模限制
     this.collisionX = 0;
     this.collisionY = 0;
+    this.dir = { x: 0, y: 0 };
     if (map.indexOf(other.tag) > -1) {
       // this.touchingNumber = false;
       this.touchingNumber--;
     }
   }
 
-  async dieJump() {
+  dieJump() {
     if (this.isDead) return;
     this.animationPlay("player_die");
     cc.director.getCollisionManager().enabled = false;
@@ -357,13 +420,17 @@ export default class Player extends cc.Component {
     // this.anim.play("player_die");
     this._speed.y = this.jumpSpeed;
     // this.touchingNumber = false;
-    this.touchingNumber--;
+    this.touchingNumber = 0;
     this.isHunker = false;
     this.isFallDown = true;
     this.isJumping = false;
     this.isDead = true;
     this._life = 0;
     // this.node.parent.getComponent("camera").isRun = false;
+    this.awaitDieCall();
+  }
+
+  async awaitDieCall() {
     await delay(2000);
     cc.director
       .getScene()
@@ -398,7 +465,7 @@ export default class Player extends cc.Component {
 
   update(dt) {
     // 游戏胜利或者失败直接取消更新
-    if (this.win || this.lose) return;
+    if (this.win) return;
 
     if (this.node.y < -(cc.winSize.height / 2 + 100) && !this.isDead) {
       this.dieJump();
@@ -411,8 +478,10 @@ export default class Player extends cc.Component {
         //  自由下落
         this._speed.y += CWorld.G * dt;
         if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
-          this._speed.y =
-            this._speed.y > 0 ? this.maxSpeedV2.y : -this.maxSpeedV2.y;
+          if (!this.isDead) {
+            this._speed.y =
+              this._speed.y > 0 ? this.maxSpeedV2.y : -this.maxSpeedV2.y;
+          }
         }
         if (this._speed.y < 0 && this.isJumping && !this.isFallDown) {
           this.isFallDown = true;
@@ -447,9 +516,10 @@ export default class Player extends cc.Component {
       }
     }
 
-    if (this._speed.x * this.collisionX > 0) {
+    if (this._speed.x * this.dir.x > 0) {
       this._speed.x = 0;
     }
+    console.log(this._speed.y);
 
     this.node.x += this._speed.x * dt * CWorld.AddSpeed;
     this.node.y += this._speed.y * dt;
