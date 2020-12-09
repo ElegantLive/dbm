@@ -277,6 +277,8 @@ export default class Player extends cc.Component {
     // this.touchingNumber = true; // 增加触碰
     this.touchingNumber++;
     this.jumpCount = false; // 清除跳跃
+    let inPre = 20;
+    let ignorePre = 5;
 
     let dir: Dir = { x: 0, y: 0 }; // 记录碰撞方向
     let otherR = other.world.aabb.xMax; // 碰撞物的右边x
@@ -289,13 +291,13 @@ export default class Player extends cc.Component {
     let myU = self.world.aabb.yMax; // 我上边x
     let myD = self.world.aabb.yMin; // 我的下边x
 
-    if (myR - otherL >= 0 && myR - otherL < 60) {
+    if (myR - otherL >= 0 && myR - otherL < inPre) {
       // 我的最大x大于他的最小x，右侧撞到
       dir.x = 1;
       // console.log("myR - otherL");
       // console.log(myR - otherL);
     }
-    if (otherR - myL >= 0 && otherR - myL < 60) {
+    if (otherR - myL >= 0 && otherR - myL < inPre) {
       // 他的最大x大于我的最小x，左侧撞到
       // console.log("otherR - myL");
       // console.log(otherR - myL);
@@ -308,24 +310,24 @@ export default class Player extends cc.Component {
 
     if (dir.x != 0) {
       // 检查是否清除x
-      if (myU - otherD >= 0 && myU - otherD < 5) {
+      if (myU - otherD >= 0 && myU - otherD < ignorePre) {
         // console.log("clean x");
         dir.x = 0;
       }
-      if (otherU - myD >= 0 && otherU - myD < 5) {
+      if (otherU - myD >= 0 && otherU - myD < ignorePre) {
         // console.log("clean x");
         dir.x = 0;
       }
     }
 
-    if (myU - otherD >= 0 && myU - otherD < 60) {
+    if (myU - otherD >= 0 && myU - otherD < inPre) {
       // 我的最大y大于他的最小y，上侧撞到
       dir.y = 1;
       // console.log("myU - otherD");
       // console.log(myU - otherD);
     }
 
-    if (otherU - myD >= 0 && otherU - myD < 60) {
+    if (otherU - myD >= 0 && otherU - myD < inPre) {
       // 他的最大y大于我的最小y，下侧撞到
       // console.log("otherU - myD");
       // console.log(otherU - myD);
@@ -338,11 +340,11 @@ export default class Player extends cc.Component {
 
     if (dir.y) {
       // 检查是否清除y
-      if (myR - otherL >= 0 && myR - otherL < 5) {
+      if (myR - otherL >= 0 && myR - otherL < ignorePre) {
         // console.log("clean y");
         dir.y = 0;
       }
-      if (otherR - myL >= 0 && otherR - myL < 5) {
+      if (otherR - myL >= 0 && otherR - myL < ignorePre) {
         // console.log("clean y");
         dir.y = 0;
       }

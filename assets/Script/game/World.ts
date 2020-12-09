@@ -13,8 +13,6 @@ export default class CWorld extends cc.Component {
   static GiveCoin: number = 0;
   static AddSpeed: number = 1;
 
-  // LIFE-CYCLE CALLBACKS:
-
   onLoad() {
     CWorld.G = this.WorldFallG;
     CWorld.WalkA = this.WorldWalkA;
@@ -22,9 +20,7 @@ export default class CWorld extends cc.Component {
 
   start() {
     cc.director.getCollisionManager().enabled = true;
-    cc.director.getCollisionManager().enabledDebugDraw = false;
-    cc.director.getCollisionManager().enabledDrawBoundingBox = false;
+    cc.director.getCollisionManager().enabledDebugDraw = true;
+    cc.director.getCollisionManager().enabledDrawBoundingBox = true;
   }
-
-  // update (dt) {}
 }
