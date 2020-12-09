@@ -9,8 +9,9 @@ export default class WxOpenShare extends cc.Component {
       wx.showShareMenu({ withShareTicket: true });
       wx.onShareAppMessage(function (res) {
         return {
-          title: "经典冒险游戏始终好玩，来吧！一起回味经典的乐趣。",
-          imageUrl: null,
+          title: "这是一款很神奇，很简单的冒险！！！",
+          imageUrl:
+            "https://mmbiz.qpic.cn/mmbiz_png/w5pLFvdua9E8aJcPHkk0MqRhlWkNjD4472z1QDYNYQsoNo52tJMk4STVOibqekjkqRXoib9tibDbHv48lvzWkSX0Q/0",
           success(res) {
             console.log(res);
           },

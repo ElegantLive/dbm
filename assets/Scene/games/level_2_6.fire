@@ -1135,7 +1135,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        1147.439,
+        1132.135,
         -280,
         0,
         0,
@@ -6837,8 +6837,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 50.05,
-      "height": 37.8
+      "width": 56.73,
+      "height": 42.84
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -6903,7 +6903,7 @@
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 2,
+    "_N$overflow": 0,
     "_N$cacheMode": 0,
     "_id": "2fdqQwZhlM4bsPBieXf/2x"
   },

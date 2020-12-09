@@ -348,6 +348,7 @@ export default class Player extends cc.Component {
       }
     }
     this.collisionArry[other.uuid] = dir;
+    this.touchingNumber = Object.keys(this.collisionArry).length;
     this.dir = compileDir(this.collisionArry);
 
     if (this._speed.x > 0) {
@@ -438,10 +439,11 @@ export default class Player extends cc.Component {
     this.collisionY = 0;
     delete this.collisionArry[other.uuid];
     this.dir = compileDir(this.collisionArry);
-    if (map.indexOf(other.tag) > -1) {
-      // this.touchingNumber = false;
-      this.touchingNumber--;
-    }
+    this.touchingNumber = Object.keys(this.collisionArry).length;
+    // if (map.indexOf(other.tag) > -1) {
+    //   // this.touchingNumber = false;
+    //   this.touchingNumber--;
+    // }
   }
 
   dieJump() {
@@ -458,6 +460,7 @@ export default class Player extends cc.Component {
     this.isJumping = false;
     this.isDead = true;
     this._life = 0;
+    cc.find("root").getComponent("AudioManager").playOnceMusic("foollose");
     cc.find("Canvas/Princess").getComponent(cc.Animation).play("princess_cry");
     // this.node.parent.getComponent("camera").isRun = false;
     this.awaitDieCall();
@@ -485,6 +488,7 @@ export default class Player extends cc.Component {
           this.noUpControlPlayer();
           this.noDownControlPlayer();
           this.noLRControlPlayer();
+          cc.find("root").getComponent("AudioManager").playOnceMusic("win");
           cc.director
             .getScene()
             .getChildByName("Canvas")
@@ -504,13 +508,17 @@ export default class Player extends cc.Component {
       this.dieJump();
     }
 
+    // console.log(
+    //   this.isFallDown,
+    //   this.isJumping,
+    //   this.touchingNumber < 1,
+    //   this.dir.top,
+    //   this.dir.bottom
+    // );
+    // console.log(this.touchingNumber);
+
     // y
-    if (
-      this.isFallDown ||
-      this.isJumping ||
-      this.touchingNumber < 1 ||
-      (!this.dir.top && !this.dir.bottom)
-    ) {
+    if (this.isFallDown || this.isJumping || this.touchingNumber < 1) {
       //  自由下落
       this._speed.y += CWorld.G * dt;
       if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {

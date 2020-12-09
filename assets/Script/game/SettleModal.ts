@@ -26,7 +26,8 @@ export default class SettleModal extends cc.Component {
       rightBtn = cc.find("right", btnGroup),
       main = cc.find("main", this.node),
       title = cc.find("title", this.node),
-      mainLabel = main.getChildByName("Label");
+      mainLabel = main.getChildByName("Label"),
+      nexlLv = getNextLevel();
     if (type == "win") {
       main.getComponent(cc.Sprite).spriteFrame = this.winMain;
       const currentLevel = getCurrentLevel();
@@ -47,8 +48,6 @@ export default class SettleModal extends cc.Component {
       type == "win" ? this.blueBtnBg : this.greenBtnBg;
 
     if (type == "win") {
-      const nexlLv = getNextLevel();
-      cc.log(nexlLv);
       if (!nexlLv) {
         rightBtn.active = false;
         btnGroup.getComponent(cc.Layout).spacingX = 100;
@@ -83,13 +82,20 @@ export default class SettleModal extends cc.Component {
       .getComponent(cc.Label).string = type == "win" ? "领取奖励" : "跳过本关";
 
     middleBtn.getComponent("GameBtn").type =
-      type == "win" ? "get_reward" : "getTips";
+      type == "win" ? "get_reward" : "jump_level";
 
-    const act = { scale: 1.1 },
-      dft = { scale: middleBtn.scale };
-    let up = cc.tween().to(0.5, act),
-      down = cc.tween().to(0.5, dft),
-      action = cc.tween().then(up).then(down);
-    cc.tween(middleBtn).repeatForever(action).start();
+    if (!nexlLv && type == "lose") {
+      middleBtn.active = false;
+      btnGroup.getComponent(cc.Layout).updateLayout();
+    }
+
+    if (middleBtn.active) {
+      const act = { scale: 1.1 },
+        dft = { scale: middleBtn.scale };
+      let up = cc.tween().to(0.5, act),
+        down = cc.tween().to(0.5, dft),
+        action = cc.tween().then(up).then(down);
+      cc.tween(middleBtn).repeatForever(action).start();
+    }
   }
 }

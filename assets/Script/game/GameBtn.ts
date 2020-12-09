@@ -1,3 +1,5 @@
+import { getCurrentLevel, getNextLevel } from "../state/Level";
+import { increaseCoin } from "../state/User";
 import { getAudioManger, loadLevelScene, toggleModal } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
@@ -39,6 +41,14 @@ export default class GameBtn extends cc.Component {
       case "get_reward":
         this.resume();
         cc.log("get_reward");
+        const currentLevel = getCurrentLevel();
+        increaseCoin(currentLevel.reward);
+        const nextLv = getNextLevel();
+        if (nextLv) {
+          loadLevelScene("next");
+        } else {
+          this.node.active = false;
+        }
         break;
       case "closeModal":
         this.resume();

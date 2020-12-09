@@ -109,7 +109,6 @@ export const getNextLevel = () => {
 
 export const unlockNextLevel = () => {
   const currentLevel = getCurrentLevel();
-  increaseCoin(currentLevel.reward);
   const nextLv = getNextLevel();
   if (!nextLv) return;
 
