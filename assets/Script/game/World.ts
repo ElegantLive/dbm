@@ -20,7 +20,7 @@ export default class CWorld extends cc.Component {
 
   start() {
     cc.director.getCollisionManager().enabled = true;
-    cc.director.getCollisionManager().enabledDebugDraw = true;
-    cc.director.getCollisionManager().enabledDrawBoundingBox = true;
+    cc.director.getCollisionManager().enabledDebugDraw = false;
+    cc.director.getCollisionManager().enabledDrawBoundingBox = false;
   }
 }
