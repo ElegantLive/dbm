@@ -1,3 +1,6 @@
+import FlyCoin from "../public/FlyCoin";
+import { getCollisionEnterDir } from "../util/Common";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -10,14 +13,17 @@ export default class HiddenRewardBlock extends cc.Component {
 
   onLoad() {}
 
-  onCollisionEnter(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnter(other: cc.BoxCollider, self: cc.BoxCollider) {
     if (other.tag == 0) {
-      if (self.node.getComponent("CollisionReward").got == 1) {
-        this.initCoin();
-        this.node.opacity = 255;
-        this.node.getComponent(cc.Sprite).spriteFrame = this.noneSpriteFrame;
-        self.node.getComponent("CollisionReward").got = -1;
-        this.playAction();
+      const dir = getCollisionEnterDir(other, self);
+      if (dir.y < 0) {
+        if (self.node.getComponent("CollisionReward").got == 1) {
+          this.initCoin();
+          this.node.opacity = 255;
+          this.node.getComponent(cc.Sprite).spriteFrame = this.noneSpriteFrame;
+          self.node.getComponent("CollisionReward").got = -1;
+          this.playAction();
+        }
       }
     }
   }

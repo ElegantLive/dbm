@@ -1,3 +1,5 @@
+import { getAudioManger } from "../util/Common";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -22,6 +24,7 @@ export default class Start extends cc.Component {
     cc.director.preloadScene("level");
   }
   startHandle() {
+    getAudioManger().playOnceMusic("button");
     cc.director.loadScene("level");
   }
 }

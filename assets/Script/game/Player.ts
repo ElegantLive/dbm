@@ -1,4 +1,5 @@
-import { delay } from "../util/Common";
+import AudioManager from "../public/AudioManager";
+import { compileDir, delay, Dir, Dirr } from "../util/Common";
 import CWorld from "./World";
 
 const { ccclass, property } = cc._decorator;
@@ -38,7 +39,14 @@ export default class Player extends cc.Component {
   private isWallCollisionCount: number = 0;
   private buttonIsPressed: boolean = false; // 是否按下按键 ｜ 是否操纵
 
-  public dir = { x: 0, y: 0 };
+  private collisionArry = {};
+
+  public dir: Dirr = {
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  };
 
   private winTween = null;
 
@@ -133,7 +141,7 @@ export default class Player extends cc.Component {
 
   noUpControlPlayer() {
     if (this.win || this.isDead) return;
-    this.isJumping = true;
+    // this.isJumping = true;
   }
 
   playerLeft() {
@@ -160,8 +168,14 @@ export default class Player extends cc.Component {
 
   playerUp() {
     if (this.win || this.isDead) return;
-    if (!this.isJumping && !this.jumpCount && !this.isDead) {
+    if (
+      !this.isJumping &&
+      !this.jumpCount &&
+      !this.isDead &&
+      !this.isFallDown
+    ) {
       // 如果活着的没在跳跃状态，并且玩家着地
+      cc.find("root").getComponent("AudioManager").playOnceMusic("jump");
       this.animationPlay("player_jump");
       this._speed.y = this.jumpSpeed;
       this.isJumping = true;
@@ -264,7 +278,7 @@ export default class Player extends cc.Component {
     this.touchingNumber++;
     this.jumpCount = false; // 清除跳跃
 
-    this.dir = { x: 0, y: 0 }; // 记录碰撞方向
+    let dir: Dir = { x: 0, y: 0 }; // 记录碰撞方向
     let otherR = other.world.aabb.xMax; // 碰撞物的右边x
     let otherL = other.world.aabb.xMin; // 碰撞物的左边x
     let otherU = other.world.aabb.yMax; // 碰撞物的上边x
@@ -277,92 +291,105 @@ export default class Player extends cc.Component {
 
     if (myR - otherL >= 0 && myR - otherL < 60) {
       // 我的最大x大于他的最小x，右侧撞到
-      this.dir.x = 1;
+      dir.x = 1;
       // console.log("myR - otherL");
       // console.log(myR - otherL);
     }
     if (otherR - myL >= 0 && otherR - myL < 60) {
       // 他的最大x大于我的最小x，左侧撞到
-      this.dir.x = -1;
       // console.log("otherR - myL");
       // console.log(otherR - myL);
+      if (!dir.x) {
+        dir.x = -1;
+      } else {
+        dir.x = 0;
+      }
     }
 
-    if (this.dir.x != 0) {
+    if (dir.x != 0) {
       // 检查是否清除x
       if (myU - otherD >= 0 && myU - otherD < 5) {
         // console.log("clean x");
-        this.dir.x = 0;
+        dir.x = 0;
       }
       if (otherU - myD >= 0 && otherU - myD < 5) {
         // console.log("clean x");
-        this.dir.x = 0;
+        dir.x = 0;
       }
     }
 
     if (myU - otherD >= 0 && myU - otherD < 60) {
       // 我的最大y大于他的最小y，上侧撞到
-      this.dir.y = 1;
+      dir.y = 1;
       // console.log("myU - otherD");
       // console.log(myU - otherD);
     }
 
     if (otherU - myD >= 0 && otherU - myD < 60) {
       // 他的最大y大于我的最小y，下侧撞到
-      this.dir.y = -1;
       // console.log("otherU - myD");
       // console.log(otherU - myD);
+      if (!dir.y) {
+        dir.y = -1;
+      } else {
+        dir.y = 0;
+      }
     }
 
-    if (this.dir.y) {
+    if (dir.y) {
       // 检查是否清除y
       if (myR - otherL >= 0 && myR - otherL < 5) {
         // console.log("clean y");
-        this.dir.y = 0;
+        dir.y = 0;
       }
       if (otherR - myL >= 0 && otherR - myL < 5) {
         // console.log("clean y");
-        this.dir.y = 0;
+        dir.y = 0;
       }
     }
+    this.collisionArry[other.uuid] = dir;
+    this.dir = compileDir(this.collisionArry);
 
     if (this._speed.x > 0) {
-      if (this.dir.x > 0) {
+      if (this.dir.right) {
         this._speed.x = 0;
-        const pre = 1;
+        const pre = 6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
-        this.node.x = -(other.node.width + self.node.width) / 2 + pos.x + pre;
+        this.node.x -= Math.floor(Math.abs(otherL - myR));
+        // this.node.x = -(other.node.width + self.node.width) / 2 + pos.x + pre;
       }
     }
 
     if (this._speed.x < 0) {
-      if (this.dir.x < 0) {
+      if (this.dir.left) {
         this._speed.x = 0;
-        const pre = -1;
+        const pre = -6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
-        this.node.x = (other.node.width + self.node.width) / 2 + pos.x + pre;
+        this.node.x += Math.floor(Math.abs(otherR - myL));
+        // this.node.x = (other.node.width + self.node.width) / 2 + pos.x + pre;
       }
     }
 
     if (this._speed.y > 0) {
-      if (this.dir.y > 0) {
+      if (this.dir.top) {
         this._speed.y = -this._speed.y;
-
-        const pre = 4;
+        const pre = 6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
-        this.node.y = -(other.node.height + self.node.height) / 2 + pos.y + pre;
+        this.node.y -= Math.floor(Math.abs(otherD - myU));
+        // this.node.y = -(other.node.height + self.node.height) / 2 + pos.y + pre;
       }
     }
     if (this._speed.y < 0) {
-      if (this.dir.y < 0) {
+      if (this.dir.bottom) {
         this._speed.y = 0;
-        const pre = -4;
+        const pre = -6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
-        this.node.y = (other.node.height + self.node.height) / 2 + pos.y + pre;
+        this.node.y += Math.floor(Math.abs(otherU - myD));
+        // this.node.y = (other.node.height + self.node.height) / 2 + pos.y + pre;
       }
     }
 
@@ -398,11 +425,9 @@ export default class Player extends cc.Component {
   }
 
   onCollisionEnterByReward(other: cc.BoxCollider, self: cc.BoxCollider) {
-    if (this.isJumping) {
-      const sc = other.node.getComponent("CollisionReward");
-      if (sc) {
-        sc.dispachGot();
-      }
+    const sc = other.node.getComponent("CollisionReward");
+    if (sc) {
+      sc.dispachGot();
     }
   }
 
@@ -411,7 +436,8 @@ export default class Player extends cc.Component {
     // 清除穿模限制
     this.collisionX = 0;
     this.collisionY = 0;
-    this.dir = { x: 0, y: 0 };
+    delete this.collisionArry[other.uuid];
+    this.dir = compileDir(this.collisionArry);
     if (map.indexOf(other.tag) > -1) {
       // this.touchingNumber = false;
       this.touchingNumber--;
@@ -432,6 +458,7 @@ export default class Player extends cc.Component {
     this.isJumping = false;
     this.isDead = true;
     this._life = 0;
+    cc.find("Canvas/Princess").getComponent(cc.Animation).play("princess_cry");
     // this.node.parent.getComponent("camera").isRun = false;
     this.awaitDieCall();
   }
@@ -478,7 +505,12 @@ export default class Player extends cc.Component {
     }
 
     // y
-    if (this.isFallDown || this.isJumping || this.touchingNumber < 1) {
+    if (
+      this.isFallDown ||
+      this.isJumping ||
+      this.touchingNumber < 1 ||
+      (!this.dir.top && !this.dir.bottom)
+    ) {
       //  自由下落
       this._speed.y += CWorld.G * dt;
       if (Math.abs(this._speed.y) > this.maxSpeedV2.y) {
@@ -517,7 +549,10 @@ export default class Player extends cc.Component {
       }
     }
 
-    if (this._speed.x * this.dir.x > 0) {
+    if (this._speed.x > 0 && this.dir.right) {
+      this._speed.x = 0;
+    }
+    if (this._speed.x < 0 && this.dir.left) {
       this._speed.x = 0;
     }
     // console.log(this._speed.y);

@@ -1,3 +1,4 @@
+import { getCollisionEnterDir } from "../util/Common";
 import Game4 from "./Game4";
 
 const { ccclass, property } = cc._decorator;
@@ -13,22 +14,31 @@ export default class MulipleRewardBlockGame4 extends cc.Component {
   @property()
   number = 0;
 
-  onLoad() {}
+  dftY;
+  onLoad() {
+    this.dftY = this.node.y;
+  }
 
-  onCollisionEnter(other: cc.Collider, self: cc.Collider) {
+  onCollisionEnter(other: cc.BoxCollider, self: cc.BoxCollider) {
     if (other.tag == 0) {
-      if (this.number > 0) {
-        this.initCoin();
-        this.playAction();
+      const dir = getCollisionEnterDir(other, self);
+      if (dir.y < 0) {
+        if (this.number > 0) {
+          this.initCoin();
+          this.playAction();
 
-        const game4: Game4 = cc.director
-          .getScene()
-          .getChildByName("Canvas")
-          .getComponent("Game4");
-        game4.dispatchNumber();
-        this.number--;
-      } else {
-        this.node.getComponent(cc.Sprite).spriteFrame = this.noneSpriteFrame;
+          const game4: Game4 = cc.director
+            .getScene()
+            .getChildByName("Canvas")
+            .getComponent("Game4");
+          game4.dispatchNumber();
+          this.number--;
+          if (this.number < 1) {
+            this.node.getComponent(
+              cc.Sprite
+            ).spriteFrame = this.noneSpriteFrame;
+          }
+        }
       }
     }
   }
@@ -40,10 +50,10 @@ export default class MulipleRewardBlockGame4 extends cc.Component {
 
   playAction() {
     const dft = {
-        y: this.node.y,
+        y: this.dftY,
       },
       act = {
-        y: this.node.y + 30,
+        y: this.dftY + 30,
       };
     let up = cc.tween().to(0.1, act),
       down = cc.tween().to(0.1, dft);

@@ -1,4 +1,4 @@
-import { loadLevelScene, toggleModal } from "../util/Common";
+import { getAudioManger, loadLevelScene, toggleModal } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
 
@@ -12,6 +12,7 @@ export default class GameBtn extends cc.Component {
   }
 
   handleClick() {
+    getAudioManger().playOnceMusic("button");
     switch (this.type) {
       case "pause":
         this.pauseGame();
@@ -53,7 +54,7 @@ export default class GameBtn extends cc.Component {
   }
 
   pauseGame() {
-    cc.audioEngine.pauseAll();
+    // cc.audioEngine.pauseAll();
     cc.director.pause();
     this.openModal("pauseContainer");
   }
@@ -65,7 +66,7 @@ export default class GameBtn extends cc.Component {
 
   resume() {
     cc.director.resume();
-    cc.audioEngine.resumeAll();
+    // cc.audioEngine.resumeAll();
   }
 
   closeModal(contanier?: string) {

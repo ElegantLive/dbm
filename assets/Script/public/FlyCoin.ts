@@ -1,4 +1,5 @@
 import { increaseCoin } from "../state/User";
+import AudioManager from "./AudioManager";
 
 const { ccclass, property } = cc._decorator;
 
@@ -14,6 +15,7 @@ export default class FlyCoin extends cc.Component {
     pos.y += node.height / 2;
     this.node.setPosition(pos);
     cc.find("Canvas").addChild(this.node);
+    cc.find("root").getComponent("AudioManager").playOnceMusic("coin");
     this.initAction();
   }
 

@@ -1,4 +1,5 @@
 import { initCurrentLevel } from "../state/Level";
+import { getAudioManger } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
 
@@ -28,6 +29,7 @@ export default class LevelItem extends cc.Component {
     const { slv, lv, status } = this.lvInfo;
     if (status != "lock") {
       initCurrentLevel(this.lvInfo);
+      getAudioManger().playOnceMusic("button");
       cc.director.loadScene(`level_${slv}_${lv}`);
     }
   }

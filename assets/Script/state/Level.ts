@@ -1,7 +1,8 @@
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
 import { LevelInfo } from "../level/LevelItem";
+import { increaseCoin } from "./User";
 
-const maxLevel = 10;
+const maxLevel = 13;
 export const LevelKey = "userLevel";
 
 export const initLevel = () => {
@@ -16,6 +17,9 @@ export const initLevel = () => {
         lv,
         slv,
         status: index < 1 ? "current" : "lock",
+        times: 0, // 挑战次数
+        life: 3, // 命
+        reward: 300, // 通关金币奖励
       };
       level.push(item);
     }
@@ -37,6 +41,9 @@ export const initLevel = () => {
         lv,
         slv,
         status,
+        times: 0, // 挑战次数
+        life: 3, // 命
+        reward: 300, // 通关金币奖励
       };
       level.push(item);
     }
@@ -102,6 +109,7 @@ export const getNextLevel = () => {
 
 export const unlockNextLevel = () => {
   const currentLevel = getCurrentLevel();
+  increaseCoin(currentLevel.reward);
   const nextLv = getNextLevel();
   if (!nextLv) return;
 

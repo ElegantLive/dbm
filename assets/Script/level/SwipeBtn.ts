@@ -1,3 +1,4 @@
+import { getAudioManger } from "../util/Common";
 import SwipeLevelContainer, { Direction } from "./SwipeLevelContainer";
 
 const { ccclass, property } = cc._decorator;
@@ -19,6 +20,7 @@ export default class SwipeBtn extends cc.Component {
   }
 
   clickHandle() {
+    getAudioManger().playOnceMusic("button");
     this.moveContaner.getComponent("SwipeLevelContainer").moveHandle(this.dir);
   }
 }

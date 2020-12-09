@@ -1,3 +1,4 @@
+import AudioManager from "../public/AudioManager";
 import {
   getCurrentLevel,
   getNextLevel,
@@ -7,6 +8,13 @@ import {
 export type Dir = {
   x: number;
   y: number;
+};
+
+export type Dirr = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
 };
 
 export const isJsonString = (str) => {
@@ -151,4 +159,45 @@ export const getCollisionEnterDir = (
   }
 
   return dir;
+};
+
+export const compileDir = (all): Dirr => {
+  let returnObj: Dirr = {
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  };
+  for (const key in all) {
+    if (Object.prototype.hasOwnProperty.call(all, key)) {
+      const element: Dir = all[key];
+
+      if (
+        returnObj.left &&
+        returnObj.right &&
+        returnObj.top &&
+        returnObj.bottom
+      ) {
+        break;
+      }
+
+      if (element.x > 0 && !returnObj.right) {
+        returnObj.right = 1;
+      }
+      if (element.x < 0 && !returnObj.left) {
+        returnObj.left = 1;
+      }
+      if (element.y > 0 && !returnObj.top) {
+        returnObj.top = 1;
+      }
+      if (element.y < 0 && !returnObj.bottom) {
+        returnObj.bottom = 1;
+      }
+    }
+  }
+  return returnObj;
+};
+
+export const getAudioManger = (): AudioManager => {
+  return cc.find("root").getComponent("AudioManager");
 };
