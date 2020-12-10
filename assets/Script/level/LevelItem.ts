@@ -27,9 +27,9 @@ export default class LevelItem extends cc.Component {
   }
   goLevel() {
     const { slv, lv, status } = this.lvInfo;
+    getAudioManger().playOnceMusic("button");
     if (status != "lock") {
       initCurrentLevel(this.lvInfo);
-      getAudioManger().playOnceMusic("button");
       cc.director.loadScene(`level_${slv}_${lv}`);
     }
   }

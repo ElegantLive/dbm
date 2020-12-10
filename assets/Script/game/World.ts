@@ -8,6 +8,9 @@ export default class CWorld extends cc.Component {
   @property()
   WorldWalkA: number = 300;
 
+  @property()
+  debug: boolean = false;
+
   static G: number = 0;
   static WalkA: number = 0;
   static GiveCoin: number = 0;
@@ -20,7 +23,7 @@ export default class CWorld extends cc.Component {
 
   start() {
     cc.director.getCollisionManager().enabled = true;
-    cc.director.getCollisionManager().enabledDebugDraw = false;
-    cc.director.getCollisionManager().enabledDrawBoundingBox = false;
+    cc.director.getCollisionManager().enabledDebugDraw = this.debug;
+    cc.director.getCollisionManager().enabledDrawBoundingBox = this.debug;
   }
 }

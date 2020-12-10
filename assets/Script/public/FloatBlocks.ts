@@ -25,7 +25,7 @@ export default class Direct extends cc.Component {
     if (other.tag == 0 && !this.isTouch && !this._speed_y) {
       this._speed_y = this.fallNumber;
       this.isTouch = true;
-      this.wrongNode.active = true;
+      // this.wrongNode.active = true;
     }
   }
 }

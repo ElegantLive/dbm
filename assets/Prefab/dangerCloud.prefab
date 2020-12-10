@@ -446,7 +446,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "3c1aa616-2d8e-4106-b5da-1ff3a4d142ef"
     },
     "fileId": "",
     "sync": false

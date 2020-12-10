@@ -1,3 +1,4 @@
+import { openVideoWithCb } from "../platform/wxVideo";
 import { getCurrentLevel, getNextLevel } from "../state/Level";
 import { increaseCoin } from "../state/User";
 import { getAudioManger, loadLevelScene, toggleModal } from "../util/Common";
@@ -15,6 +16,7 @@ export default class GameBtn extends cc.Component {
 
   handleClick() {
     getAudioManger().playOnceMusic("button");
+    let call: Function;
     switch (this.type) {
       case "pause":
         this.pauseGame();
@@ -32,7 +34,14 @@ export default class GameBtn extends cc.Component {
         break;
       case "jump_level":
         this.resume();
-        loadLevelScene("next");
+        call = () => {
+          loadLevelScene("next");
+        };
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+          openVideoWithCb(call);
+        } else {
+          call();
+        }
         break;
       case "go_next_level":
         this.resume();
@@ -41,13 +50,21 @@ export default class GameBtn extends cc.Component {
       case "get_reward":
         this.resume();
         cc.log("get_reward");
-        const currentLevel = getCurrentLevel();
-        increaseCoin(currentLevel.reward);
-        const nextLv = getNextLevel();
-        if (nextLv) {
-          loadLevelScene("next");
+
+        call = () => {
+          const currentLevel = getCurrentLevel();
+          increaseCoin(currentLevel.reward);
+          const nextLv = getNextLevel();
+          if (nextLv) {
+            loadLevelScene("next");
+          } else {
+            this.node.active = false;
+          }
+        };
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+          openVideoWithCb(call);
         } else {
-          this.node.active = false;
+          call();
         }
         break;
       case "closeModal":

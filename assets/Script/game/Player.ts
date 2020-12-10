@@ -278,7 +278,7 @@ export default class Player extends cc.Component {
     this.touchingNumber++;
     this.jumpCount = false; // 清除跳跃
     let inPre = 20;
-    let ignorePre = 5;
+    let ignorePre = 3;
 
     let dir: Dir = { x: 0, y: 0 }; // 记录碰撞方向
     let otherR = other.world.aabb.xMax; // 碰撞物的右边x
@@ -293,59 +293,65 @@ export default class Player extends cc.Component {
 
     if (myR - otherL >= 0 && myR - otherL < inPre) {
       // 我的最大x大于他的最小x，右侧撞到
-      dir.x = 1;
       // console.log("myR - otherL");
       // console.log(myR - otherL);
+      if (this._speed.x > 0) {
+        dir.x = 1;
+      }
     }
     if (otherR - myL >= 0 && otherR - myL < inPre) {
       // 他的最大x大于我的最小x，左侧撞到
       // console.log("otherR - myL");
       // console.log(otherR - myL);
-      if (!dir.x) {
+      if (this._speed.x < 0) {
         dir.x = -1;
-      } else {
-        dir.x = 0;
       }
     }
 
+    let cleanX = false;
     if (dir.x != 0) {
       // 检查是否清除x
       if (myU - otherD >= 0 && myU - otherD < ignorePre) {
         // console.log("clean x");
+        cleanX = true;
         dir.x = 0;
       }
       if (otherU - myD >= 0 && otherU - myD < ignorePre) {
         // console.log("clean x");
+        cleanX = true;
         dir.x = 0;
       }
     }
 
     if (myU - otherD >= 0 && myU - otherD < inPre) {
       // 我的最大y大于他的最小y，上侧撞到
-      dir.y = 1;
       // console.log("myU - otherD");
       // console.log(myU - otherD);
+      if (this._speed.y > 0) {
+        dir.y = 1;
+      }
     }
 
     if (otherU - myD >= 0 && otherU - myD < inPre) {
       // 他的最大y大于我的最小y，下侧撞到
       // console.log("otherU - myD");
       // console.log(otherU - myD);
-      if (!dir.y) {
+      if (this._speed.y < 0) {
         dir.y = -1;
-      } else {
-        dir.y = 0;
       }
     }
 
+    let cleanY = false;
     if (dir.y) {
       // 检查是否清除y
       if (myR - otherL >= 0 && myR - otherL < ignorePre) {
         // console.log("clean y");
+        cleanY = true;
         dir.y = 0;
       }
       if (otherR - myL >= 0 && otherR - myL < ignorePre) {
         // console.log("clean y");
+        cleanY = true;
         dir.y = 0;
       }
     }
@@ -353,13 +359,20 @@ export default class Player extends cc.Component {
     this.touchingNumber = Object.keys(this.collisionArry).length;
     this.dir = compileDir(this.collisionArry);
 
+    let resetX = 0;
     if (this._speed.x > 0) {
       if (this.dir.right) {
         this._speed.x = 0;
         const pre = 6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        // console.log("sub x");
+        // console.log(Math.abs(otherL - myR));
         this.node.x -= Math.floor(Math.abs(otherL - myR));
+        resetX = Math.floor(Math.abs(otherL - myR));
+        // if (resetX < ignorePre) {
+        //   this.dir.right = 0;
+        // }
         // this.node.x = -(other.node.width + self.node.width) / 2 + pos.x + pre;
       }
     }
@@ -370,18 +383,31 @@ export default class Player extends cc.Component {
         const pre = -6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        // console.log("add x");
+        // console.log(Math.abs(otherR - myL));
         this.node.x += Math.floor(Math.abs(otherR - myL));
+        resetX = Math.floor(Math.abs(otherR - myL));
+        // if (resetX < ignorePre) {
+        //   this.dir.left = 0;
+        // }
         // this.node.x = (other.node.width + self.node.width) / 2 + pos.x + pre;
       }
     }
 
+    let resetY = 0;
     if (this._speed.y > 0) {
       if (this.dir.top) {
         this._speed.y = -this._speed.y;
         const pre = 6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        // console.log("sub y");
+        // console.log(Math.abs(otherD - myU));
         this.node.y -= Math.floor(Math.abs(otherD - myU));
+        resetY = Math.floor(Math.abs(otherD - myU));
+        // if (resetY < ignorePre) {
+        //   this.dir.top = 0;
+        // }
         // this.node.y = -(other.node.height + self.node.height) / 2 + pos.y + pre;
       }
     }
@@ -391,10 +417,28 @@ export default class Player extends cc.Component {
         const pre = -6;
         const ws = other.node.convertToWorldSpaceAR(cc.v2(0, 0));
         const pos = self.node.parent.convertToNodeSpaceAR(ws);
+        // console.log("add y");
+        // console.log(Math.abs(otherU - myD));
         this.node.y += Math.floor(Math.abs(otherU - myD));
+        resetY = Math.floor(Math.abs(otherU - myD));
+        // if (resetY < ignorePre) {
+        //   this.dir.bottom = 0;
+        // }
         // this.node.y = (other.node.height + self.node.height) / 2 + pos.y + pre;
       }
     }
+
+    // console.log(resetY, resetX);
+    if (resetX && resetY) {
+      this.dir.bottom = 0;
+      this.dir.top = 0;
+      this.dir.right = 0;
+      this.dir.left = 0;
+    }
+    // if (resetY) {
+    //   this.dir.right = 0;
+    //   this.dir.left = 0;
+    // }
 
     if (this.isFallDown) {
       this.isJumping = false;
@@ -510,14 +554,14 @@ export default class Player extends cc.Component {
       this.dieJump();
     }
 
-    // console.log(
+    // // console.log(
     //   this.isFallDown,
     //   this.isJumping,
     //   this.touchingNumber < 1,
     //   this.dir.top,
     //   this.dir.bottom
     // );
-    // console.log(this.touchingNumber);
+    // // console.log(this.touchingNumber);
 
     // y
     if (this.isFallDown || this.isJumping || this.touchingNumber < 1) {
@@ -565,7 +609,7 @@ export default class Player extends cc.Component {
     if (this._speed.x < 0 && this.dir.left) {
       this._speed.x = 0;
     }
-    // console.log(this._speed.y);
+    // // console.log(this._speed.y);
 
     this.node.x += this._speed.x * dt * CWorld.AddSpeed;
     this.node.y += this._speed.y * dt;
