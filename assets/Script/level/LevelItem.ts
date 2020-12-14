@@ -1,6 +1,7 @@
 import { initCurrentLevel } from "../state/Level";
 import { checkHeart, descreaseHeart } from "../state/User";
 import { getAudioManger } from "../util/Common";
+import { hideLoading, showLoading } from "../util/GameCommon";
 
 const { ccclass, property } = cc._decorator;
 
@@ -36,8 +37,11 @@ export default class LevelItem extends cc.Component {
     const { slv, lv, status } = this.lvInfo;
     getAudioManger().playOnceMusic("button");
     if (status != "lock") {
+      showLoading();
       initCurrentLevel(this.lvInfo);
-      cc.director.loadScene(`level_${slv}_${lv}`);
+      cc.director.loadScene(`level_${slv}_${lv}`, () => {
+        hideLoading();
+      });
     }
   }
 

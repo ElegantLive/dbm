@@ -4,6 +4,7 @@ import {
   getNextLevel,
   initCurrentLevel,
 } from "../state/Level";
+import { hideLoading, showLoading } from "./GameCommon";
 
 export type Dir = {
   x: number;
@@ -27,7 +28,7 @@ export const isJsonString = (str) => {
 };
 
 export async function delay(time) {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => {
       return resolve();
     }, time);
@@ -79,7 +80,27 @@ export const loadLevelScene = (type: "current" | "next") => {
   if (!lvInfo) return;
 
   initCurrentLevel(lvInfo);
-  cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
+  showLoading();
+  cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`, () => {
+    hideLoading();
+  });
+};
+
+export const preLoadLevelScene = (type: "current" | "next") => {
+  let lvInfo = null;
+  switch (type) {
+    case "current":
+      lvInfo = getCurrentLevel();
+      break;
+    case "next":
+      lvInfo = getNextLevel();
+      break;
+    default:
+      break;
+  }
+  if (!lvInfo) return;
+
+  cc.director.preloadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
 };
 
 export const getDistance = (start, end) => {
