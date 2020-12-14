@@ -527,6 +527,7 @@ export default class Player extends cc.Component {
       const princess = cc.find("Canvas/Princess");
       this.animationPlay("player_stand");
       princess.getComponent(cc.Animation).play("princess_shake");
+      princess.removeAllChildren();
       this.winTween = cc
         .tween(this.node)
         .to(0.1, { y: princess.y })
