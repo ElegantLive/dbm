@@ -3,8 +3,10 @@ import {
   getCurrentLevel,
   getNextLevel,
   initCurrentLevel,
+  LevelKey,
 } from "../state/Level";
 import { hideLoading, showLoading } from "./GameCommon";
+import { getCfgVal } from "./Storage";
 
 export type Dir = {
   x: number;
@@ -101,6 +103,24 @@ export const preLoadLevelScene = (type: "current" | "next") => {
   if (!lvInfo) return;
 
   cc.director.preloadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
+};
+
+export const preLoadAllLevelScene = () => {
+  const allOfLv = getCfgVal(LevelKey);
+  allOfLv.forEach((lvInfo) => {
+    cc.director.preloadScene(
+      `level_${lvInfo.slv}_${lvInfo.lv}`,
+      (loadNumber, allNumber) => {
+        // console.log(
+        //   "loading " +
+        //     `level_${lvInfo.slv}_${lvInfo.lv} ${loadNumber} /  ${allNumber}`
+        // );
+      },
+      () => {
+        console.log("loaded " + `level_${lvInfo.slv}_${lvInfo.lv}`);
+      }
+    );
+  });
 };
 
 export const getDistance = (start, end) => {

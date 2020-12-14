@@ -1,4 +1,5 @@
 import { getAudioManger } from "../util/Common";
+import { hideLoading, showLoading } from "../util/GameCommon";
 
 const { ccclass, property } = cc._decorator;
 
@@ -25,6 +26,9 @@ export default class Start extends cc.Component {
   }
   startHandle() {
     getAudioManger().playOnceMusic("button");
-    cc.director.loadScene("level");
+    showLoading();
+    cc.director.loadScene("level", () => {
+      hideLoading();
+    });
   }
 }
