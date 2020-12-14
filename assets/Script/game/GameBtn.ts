@@ -1,4 +1,5 @@
 import { openVideoWithCb } from "../platform/wxVideo";
+import AudioManager from "../public/AudioManager";
 import { getCurrentLevel, getNextLevel } from "../state/Level";
 import { increaseCoin } from "../state/User";
 import { getAudioManger, loadLevelScene, toggleModal } from "../util/Common";
@@ -133,5 +134,11 @@ export default class GameBtn extends cc.Component {
       .find("Canvas/ui/modal/tipsImageContainer")
       .getComponent("TipsModal");
     tipsc.init(currentLevel.slv, currentLevel.lv);
+    const audioScript: AudioManager = cc
+      .find("root")
+      .getComponent("AudioManger");
+    if (!audioScript.getBgMusicStatus()) {
+      audioScript.playBgMusic();
+    }
   }
 }

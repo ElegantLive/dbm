@@ -81,15 +81,28 @@ export default class AudioManager extends cc.Component {
 
   playBgMusic() {
     if (this.bgStatus) {
-      this.bgMusicChannel = cc.audioEngine.play(this.bgMusic, true, 0.5);
+      if (typeof this.bgMusicChannel == "undefined") {
+        this.bgMusicChannel = cc.audioEngine.play(this.bgMusic, true, 0.5);
+      } else {
+        cc.audioEngine.resume(this.bgMusicChannel);
+      }
     }
   }
 
   stopBgMusic() {
     if (this.bgMusicChannel !== undefined) {
-      cc.audioEngine.stop(this.bgMusicChannel);
-      this.bgMusicChannel = undefined;
+      cc.audioEngine.pause(this.bgMusicChannel);
     }
+  }
+
+  getBgMusicStatus() {
+    if (this.bgMusicChannel !== undefined) {
+      return (
+        cc.audioEngine.getState(this.bgMusicChannel) ==
+        cc.audioEngine.AudioState.PLAYING
+      );
+    }
+    return false;
   }
 
   checkBgMusicStatus(status: boolean) {
@@ -100,14 +113,14 @@ export default class AudioManager extends cc.Component {
     }
   }
 
-  checkOnceMusicStatus(status) {
+  checkOnceMusicStatus(status: boolean) {
     if (this.onceStatus != status) {
       this.onceStatus = status;
       this.updateStorageVolume("once", status);
     }
   }
 
-  updateStorageVolume(key, value) {
+  updateStorageVolume(key: "bg" | "once", value: boolean) {
     const volume = JSON.parse(cc.sys.localStorage.getItem("userVolume"));
     if (volume[key] != value) {
       volume[key] = value;
