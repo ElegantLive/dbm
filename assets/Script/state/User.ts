@@ -9,7 +9,8 @@ export interface UserState {
   heart: number;
 }
 
-const resetHeart = 60;
+const resetHeart = 59;
+const maxHeart = 3;
 
 let addTime: number = resetHeart;
 
@@ -35,7 +36,7 @@ export const initUser = () => {
       skin: 0,
       has_skin: [0],
       coin: 0,
-      heart: 5,
+      heart: maxHeart,
     };
     initByStorage(UserKey, currentUserState);
     return;
@@ -47,12 +48,18 @@ export const initUser = () => {
 export const initAddTimer = () => {
   if (!addTimer) {
     addTimer = setInterval(() => {
-      if (getAddTime() > 0) {
-        decreaseAddtime();
+      if (getUser().heart >= 5) {
+        if (getAddTime() <= resetHeart) {
+          resetAddTime();
+        }
       } else {
-        // 体力加一
-        increaseHeart();
-        resetAddTime();
+        if (getAddTime() > 0) {
+          decreaseAddtime();
+        } else {
+          // 体力加一
+          increaseHeart();
+          resetAddTime();
+        }
       }
     }, 1000);
   }
@@ -72,4 +79,21 @@ export const increaseHeart = () => {
   let state = getUser();
   state.heart++;
   setCfgVal(UserKey, state);
+};
+
+export const increaseHeartByAd = () => {
+  let state = getUser();
+  state.heart = 5; // 直接补满
+  setCfgVal(UserKey, state);
+  resetAddTime();
+};
+
+export const descreaseHeart = () => {
+  let state = getUser();
+  state.heart--;
+  setCfgVal(UserKey, state);
+};
+
+export const checkHeart = () => {
+  return getUser().heart > 0;
 };

@@ -2,7 +2,7 @@
   "appid": "wxc66fa4925d50c9f6",
   "orientation": "landscape",
   "separate_engine": false,
-  "REMOTE_SERVER_ROOT": "https://res.anaculture.com/game/sqdmx/v1.0.0",
+  "REMOTE_SERVER_ROOT": "https://res.anaculture.com/game/sqdmx/v1.0.1",
   "subContext": "",
   "startSceneAssetBundle": true
 }

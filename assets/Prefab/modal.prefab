@@ -205,15 +205,20 @@
       "__id__": 1
     },
     "_enabled": true,
-    "tip": {
-      "__uuid__": "36007b42-96c8-4f5b-b149-2ec5fe4ec61f"
-    },
-    "pause": {
-      "__uuid__": "7d2c6df4-0a0b-46f3-a0de-5446ff54df8b"
-    },
-    "settle": {
-      "__uuid__": "3ae87f22-68ae-4bf5-a6b6-be201a4dd643"
-    },
+    "container": [
+      {
+        "__uuid__": "3ae87f22-68ae-4bf5-a6b6-be201a4dd643"
+      },
+      {
+        "__uuid__": "7d2c6df4-0a0b-46f3-a0de-5446ff54df8b"
+      },
+      {
+        "__uuid__": "36007b42-96c8-4f5b-b149-2ec5fe4ec61f"
+      },
+      {
+        "__uuid__": "e2de92d0-bcc2-4f9f-bcee-f7faf4533dd9"
+      }
+    ],
     "_id": ""
   },
   {

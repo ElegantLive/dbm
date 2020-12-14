@@ -203,3 +203,7 @@ export const compileDir = (all): Dirr => {
 export const getAudioManger = (): AudioManager => {
   return cc.find("root").getComponent("AudioManager");
 };
+
+export const isWx = () => {
+  return cc.sys.platform == cc.sys.WECHAT_GAME;
+};

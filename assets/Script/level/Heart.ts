@@ -1,4 +1,6 @@
-import { getAddTime, getUser } from "../state/User";
+import { openVideoWithCb } from "../platform/wxVideo";
+import { getAddTime, getUser, increaseHeartByAd } from "../state/User";
+import { isWx } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
 
@@ -36,13 +38,33 @@ export default class Heart extends cc.Component {
 
     if (!this.heartContainer) {
       this.heartContainer = cc.find("heartContainer", this.node);
+      this.heartContainer.on(
+        cc.Node.EventType.TOUCH_START,
+        this.handleHeart,
+        this
+      );
+    }
+  }
+
+  handleHeart() {
+    let call = () => {
+      increaseHeartByAd();
+    };
+    if (isWx()) {
+      openVideoWithCb(call);
+    } else {
+      call();
     }
   }
 
   update() {
     const heartNumber = getUser().heart;
     const leftTime = getAddTime();
-    this.lastTimerLabel.string = leftTime.toString();
+    if (heartNumber < 5) {
+      this.lastTimerLabel.string = leftTime.toString();
+    } else {
+      this.lastTimerLabel.string = "";
+    }
     this.updateHeart(heartNumber);
   }
 

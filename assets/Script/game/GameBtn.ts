@@ -2,6 +2,7 @@ import { openVideoWithCb } from "../platform/wxVideo";
 import { getCurrentLevel, getNextLevel } from "../state/Level";
 import { increaseCoin } from "../state/User";
 import { getAudioManger, loadLevelScene, toggleModal } from "../util/Common";
+import TipsModal from "./TipsModal";
 
 const { ccclass, property } = cc._decorator;
 
@@ -10,8 +11,18 @@ export default class GameBtn extends cc.Component {
   @property()
   type = "";
 
+  @property()
+  handle: "touch" | "click" = "click";
+
   onLoad() {
-    this.node.on("click", this.handleClick, this);
+    let eventType: string;
+    if (this.handle == "click") {
+      eventType = this.handle;
+    }
+    if (this.handle == "touch") {
+      eventType = cc.Node.EventType.TOUCH_START;
+    }
+    this.node.on(eventType, this.handleClick, this);
   }
 
   handleClick() {
@@ -27,6 +38,10 @@ export default class GameBtn extends cc.Component {
       case "home":
         this.resume();
         cc.director.loadScene("home");
+        break;
+      case "level":
+        this.resume();
+        cc.director.loadScene("level");
         break;
       case "replay":
         this.resume();
@@ -72,8 +87,14 @@ export default class GameBtn extends cc.Component {
         this.closeModal();
         break;
       case "getTips":
-        this.resume();
-        cc.log("getTips");
+        call = () => {
+          this.openTipImageMode();
+        };
+        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+          openVideoWithCb(call);
+        } else {
+          call();
+        }
         break;
       default:
         break;
@@ -103,5 +124,14 @@ export default class GameBtn extends cc.Component {
   openModal(contanier: string) {
     if (!contanier) return;
     toggleModal(contanier, true);
+  }
+
+  openTipImageMode() {
+    this.closeModal("tipsContainer");
+    const currentLevel = getCurrentLevel();
+    const tipsc: TipsModal = cc
+      .find("Canvas/ui/modal/tipsImageContainer")
+      .getComponent("TipsModal");
+    tipsc.init(currentLevel.slv, currentLevel.lv);
   }
 }

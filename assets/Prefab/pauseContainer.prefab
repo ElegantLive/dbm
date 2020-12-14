@@ -781,6 +781,7 @@
     },
     "_enabled": true,
     "type": "replay",
+    "handle": "click",
     "_id": ""
   },
   {
@@ -1127,7 +1128,8 @@
       "__id__": 20
     },
     "_enabled": true,
-    "type": "home",
+    "type": "level",
+    "handle": "click",
     "_id": ""
   },
   {
@@ -1440,6 +1442,7 @@
     },
     "_enabled": true,
     "type": "resume",
+    "handle": "click",
     "_id": ""
   },
   {

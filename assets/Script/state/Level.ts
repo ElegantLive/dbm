@@ -1,6 +1,5 @@
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
 import { LevelInfo } from "../level/LevelItem";
-import { increaseCoin } from "./User";
 
 const maxLevel = 13;
 export const LevelKey = "userLevel";

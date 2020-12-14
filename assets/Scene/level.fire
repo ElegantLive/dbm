@@ -175,7 +175,7 @@
       "array": [
         0,
         0,
-        428.68257487329714,
+        423.4864224505905,
         0,
         0,
         0,
@@ -576,15 +576,16 @@
     "_id": "bdsQ3uKnRC7o+ShhT3tSxr"
   },
   {
-    "__type__": "72678YE9Q5DAJUrqgMDZ8De",
+    "__type__": "9ee6cVppJ1LN5Yh2gMHYvT9",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 6
     },
     "_enabled": true,
-    "scene": "home",
-    "_id": "b24AkYLotPFpViCLMFsUtC"
+    "type": "home",
+    "handle": "click",
+    "_id": "7fvUtIxGhFmo7g0/CaGGWU"
   },
   {
     "__type__": "cc.Node",

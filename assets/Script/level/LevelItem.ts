@@ -1,4 +1,5 @@
 import { initCurrentLevel } from "../state/Level";
+import { checkHeart, descreaseHeart } from "../state/User";
 import { getAudioManger } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
@@ -23,9 +24,15 @@ export default class LevelItem extends cc.Component {
   lvInfo: LevelInfo;
 
   onLoad() {
-    this.node.on(cc.Node.EventType.TOUCH_END, this.goLevel, this);
+    this.node.on(cc.Node.EventType.TOUCH_START, this.goLevel, this);
   }
   goLevel() {
+    if (!checkHeart()) {
+      console.log("体力不足");
+      return;
+    } else {
+      descreaseHeart();
+    }
     const { slv, lv, status } = this.lvInfo;
     getAudioManger().playOnceMusic("button");
     if (status != "lock") {
