@@ -1,4 +1,5 @@
 //@ts-nocheck wx
+import { getAudioManager } from "../util/Common";
 import { rewardedVideoAdunit } from "./wxConfig";
 
 let rewardVideo;
@@ -30,6 +31,10 @@ const setVideoScallBack = (call: Function) => {
     return;
   }
   rewardedVideo.onClose((res) => {
+    const audioScript = getAudioManager();
+    if (!audioScript.getBgMusicStatus()) {
+      audioScript.playBgMusic();
+    }
     if ((res && res.isEnded) || typeof res === "undefined") {
       // 可以获得奖励
       console.log("got reward");
@@ -41,7 +46,7 @@ const setVideoScallBack = (call: Function) => {
   });
 };
 
-export const openVideoWithCb = (call: Function) => {
+export const openVideoWithCb = async (call: Function) => {
   if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
 
   let rewardedVideo = getRewardedVideoInstance();
@@ -51,12 +56,25 @@ export const openVideoWithCb = (call: Function) => {
   }
 
   setVideoScallBack(call);
-  rewardedVideo.show().catch((err) => {
-    // 加载失败重试
-    console.log("catch show video error");
-    console.log(err);
-    rewardedVideo.load().then(() => {
-      rewardedVideo.show();
-    });
-  });
+  try {
+    await rewardedVideoLoad(rewardedVideo);
+  } catch (error) {
+    // 失败重试
+    await rewardedVideoLoad(rewardedVideo);
+  } finally {
+    // 手动关闭音乐
+    getAudioManager().stopBgMusic();
+  }
+};
+
+const rewardedVideoLoad = async (rewardedVideo) => {
+  try {
+    await rewardedVideo.load();
+    await rewardedVideo.show();
+    return Promise.resolve();
+  } catch (error) {
+    console.log("catch show or load video error");
+    console.log(error);
+    return Promise.reject(error);
+  }
 };

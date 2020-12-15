@@ -56,13 +56,9 @@ export const toggleModal = (
     }
     contanierNode.active = state;
   } else {
-    const tipNode = cc.find("tipsContainer", modal),
-      pauseNode = cc.find("pauseContainer", modal),
-      settleNode = cc.find("settleContainer", modal);
-
-    tipNode.active = state;
-    pauseNode.active = state;
-    settleNode.active = state;
+    modal.children.map((childNode) => {
+      childNode.active = false;
+    });
   }
   modal.active = state;
 };
@@ -241,7 +237,7 @@ export const compileDir = (all): Dirr => {
   return returnObj;
 };
 
-export const getAudioManger = (): AudioManager => {
+export const getAudioManager = (): AudioManager => {
   return cc.find("root").getComponent("AudioManager");
 };
 

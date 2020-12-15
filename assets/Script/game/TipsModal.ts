@@ -1,15 +1,15 @@
-import { getCurrentLevel, getNextLevel } from "../state/Level";
 import { toggleModal } from "../util/Common";
 
-const { ccclass, property } = cc._decorator;
+const { ccclass } = cc._decorator;
 
 @ccclass
 export default class TipsModal extends cc.Component {
   init(slv: number, lv: number) {
     const closeNode = cc.find("close", this.node);
     if (closeNode) {
+      closeNode.active = false;
       setTimeout(() => {
-        closeNode.on(cc.Node.EventType.TOUCH_START, this.closeMode, this);
+        closeNode.active = true;
       }, 2000);
     }
 
@@ -25,8 +25,5 @@ export default class TipsModal extends cc.Component {
       }
     );
     toggleModal(this.node.name, true);
-  }
-  closeMode() {
-    toggleModal(this.node.name, false);
   }
 }

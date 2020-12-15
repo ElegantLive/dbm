@@ -11,8 +11,8 @@ export default class Game extends cc.Component {
 
   onLoad() {
     // 直接预加载当前关卡和下一关卡
-    // preLoadLevelScene("current");
-    // preLoadLevelScene("next");
+    preLoadLevelScene("current");
+    preLoadLevelScene("next");
   }
 
   dispatchSuccess() {

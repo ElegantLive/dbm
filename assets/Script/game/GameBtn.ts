@@ -1,8 +1,7 @@
 import { openVideoWithCb } from "../platform/wxVideo";
-import AudioManager from "../public/AudioManager";
 import { getCurrentLevel, getNextLevel } from "../state/Level";
 import { increaseCoin } from "../state/User";
-import { getAudioManger, loadLevelScene, toggleModal } from "../util/Common";
+import { getAudioManager, loadLevelScene, toggleModal } from "../util/Common";
 import TipsModal from "./TipsModal";
 
 const { ccclass, property } = cc._decorator;
@@ -27,7 +26,7 @@ export default class GameBtn extends cc.Component {
   }
 
   handleClick() {
-    getAudioManger().playOnceMusic("button");
+    getAudioManager().playOnceMusic("button");
     let call: Function;
     switch (this.type) {
       case "pause":
@@ -134,11 +133,7 @@ export default class GameBtn extends cc.Component {
       .find("Canvas/ui/modal/tipsImageContainer")
       .getComponent("TipsModal");
     tipsc.init(currentLevel.slv, currentLevel.lv);
-    const audioScript: AudioManager = cc
-      .find("root")
-      .getComponent("AudioManger");
-    if (!audioScript.getBgMusicStatus()) {
-      audioScript.playBgMusic();
-    }
+    // 不能操作
+    cc.director.pause();
   }
 }

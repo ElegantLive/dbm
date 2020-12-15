@@ -533,7 +533,7 @@
         "__id__": 15
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 18
@@ -807,8 +807,8 @@
       "__id__": 14
     },
     "_enabled": true,
-    "type": "close",
-    "handle": "click",
+    "type": "closeModal",
+    "handle": "touch",
     "_id": ""
   },
   {
