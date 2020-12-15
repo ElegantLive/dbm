@@ -31,11 +31,13 @@ export default class LevelItem extends cc.Component {
     const { slv, lv, status } = this.lvInfo;
     getAudioManager().playOnceMusic("button");
     if (status != "lock") {
-      if (!checkHeart()) {
-        console.log("体力不足");
-        return;
-      }
-      descreaseHeart();
+      // 加留存，不检测体力
+
+      // if (!checkHeart()) {
+      //   console.log("体力不足");
+      //   return;
+      // }
+      // descreaseHeart();
       showLoading();
       initCurrentLevel(this.lvInfo);
       cc.director.loadScene(`level_${slv}_${lv}`, () => {

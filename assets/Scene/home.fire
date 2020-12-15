@@ -20,7 +20,7 @@
         "__id__": 20
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [],
     "_prefab": null,
     "_opacity": 255,
@@ -193,7 +193,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        630,
+        640,
         320,
         0,
         0,
@@ -700,7 +700,7 @@
       "array": [
         0,
         0,
-        421.172510824854,
+        377.5870760500153,
         0,
         0,
         0,

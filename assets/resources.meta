@@ -11,10 +11,10 @@
     "wechatgame": false
   },
   "inlineSpriteFrames": {
-    "wechatgame": false
+    "wechatgame": true
   },
   "isRemoteBundle": {
-    "wechatgame": false
+    "wechatgame": true
   },
   "subMetas": {}
 }

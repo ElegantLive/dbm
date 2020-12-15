@@ -50,6 +50,7 @@ export const openVideoWithCb = async (call: Function) => {
   if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
 
   let rewardedVideo = getRewardedVideoInstance();
+  rewardedVideo = null; // 加留存，不看广告
   if (!rewardedVideo) {
     call && call();
     return;

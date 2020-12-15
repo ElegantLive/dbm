@@ -29,7 +29,7 @@ export const isJsonString = (str) => {
   return false;
 };
 
-export async function delay(time) {
+export async function delay(time: number) {
   return new Promise<void>((resolve) => {
     setTimeout(() => {
       return resolve();
@@ -237,7 +237,7 @@ export const compileDir = (all): Dirr => {
   return returnObj;
 };
 
-export const getAudioManager = (): AudioManager => {
+export const getAudioManager: () => AudioManager = () => {
   return cc.find("root").getComponent("AudioManager");
 };
 
