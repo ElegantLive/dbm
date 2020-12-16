@@ -5,7 +5,6 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class PreLoadAll extends cc.Component {
   onLoad() {
-    preLoadAllLevelScene();
     cc.director.preloadScene(
       "level",
       () => {},
@@ -20,5 +19,6 @@ export default class PreLoadAll extends cc.Component {
         console.log("loadedhome");
       }
     );
+    preLoadAllLevelScene();
   }
 }
