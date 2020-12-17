@@ -1,6 +1,6 @@
-import AudioManager from "../public/AudioManager";
 import { unlockNextLevel } from "../state/Level";
-import { preLoadLevelScene, toggleModal } from "../util/Common";
+import { toggleModal } from "../util/Common";
+import { preLoadLevelScene } from "../util/Load";
 
 const { ccclass, property } = cc._decorator;
 
@@ -10,8 +10,7 @@ export default class Game extends cc.Component {
   type = "";
 
   onLoad() {
-    // 直接预加载当前关卡和下一关卡
-    preLoadLevelScene("current");
+    // 直接预加载下一关卡
     preLoadLevelScene("next");
   }
 

@@ -3,10 +3,8 @@ import {
   getCurrentLevel,
   getNextLevel,
   initCurrentLevel,
-  LevelKey,
 } from "../state/Level";
 import { hideLoading, showLoading } from "./GameCommon";
-import { getCfgVal } from "./Storage";
 
 export type Dir = {
   x: number;
@@ -81,41 +79,6 @@ export const loadLevelScene = (type: "current" | "next") => {
   showLoading();
   cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`, () => {
     hideLoading();
-  });
-};
-
-export const preLoadLevelScene = (type: "current" | "next") => {
-  let lvInfo = null;
-  switch (type) {
-    case "current":
-      lvInfo = getCurrentLevel();
-      break;
-    case "next":
-      lvInfo = getNextLevel();
-      break;
-    default:
-      break;
-  }
-  if (!lvInfo) return;
-
-  cc.director.preloadScene(`level_${lvInfo.slv}_${lvInfo.lv}`);
-};
-
-export const preLoadAllLevelScene = () => {
-  const allOfLv = getCfgVal(LevelKey);
-  allOfLv.forEach((lvInfo) => {
-    cc.director.preloadScene(
-      `level_${lvInfo.slv}_${lvInfo.lv}`,
-      (loadNumber, allNumber) => {
-        // console.log(
-        //   "loading " +
-        //     `level_${lvInfo.slv}_${lvInfo.lv} ${loadNumber} /  ${allNumber}`
-        // );
-      },
-      () => {
-        console.log("loaded " + `level_${lvInfo.slv}_${lvInfo.lv}`);
-      }
-    );
   });
 };
 

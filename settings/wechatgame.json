@@ -1,8 +1,8 @@
 {
   "appid": "wxc66fa4925d50c9f6",
   "orientation": "landscape",
-  "separate_engine": false,
-  "REMOTE_SERVER_ROOT": "https://res.anaculture.com/game/sqdmx/v1.0.8",
+  "separate_engine": true,
+  "REMOTE_SERVER_ROOT": "https://res.anaculture.com/game/sqdmx/v1.0.8.7",
   "subContext": "",
-  "startSceneAssetBundle": true
+  "startSceneAssetBundle": false
 }

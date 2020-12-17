@@ -1,7 +1,5 @@
 {
-  "excludeScenes": [
-    "96967f48-4453-476e-89ed-e073883d063e"
-  ],
+  "excludeScenes": [],
   "orientation": {
     "landscapeLeft": true,
     "landscapeRight": true,
@@ -15,7 +13,7 @@
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,
   "mainCompressionType": "default",
-  "mainIsRemote": true,
+  "mainIsRemote": false,
   "optimizeHotUpdate": false,
   "md5Cache": true,
   "nativeMd5Cache": true,
