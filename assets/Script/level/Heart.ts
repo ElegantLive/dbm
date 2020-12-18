@@ -1,6 +1,6 @@
 import { openVideoWithCb } from "../platform/wxVideo";
 import { getAddTime, getUser, increaseHeartByAd } from "../state/User";
-import { isWx } from "../util/Common";
+import { isWx, toggleModal } from "../util/Common";
 
 const { ccclass, property } = cc._decorator;
 
@@ -47,14 +47,7 @@ export default class Heart extends cc.Component {
   }
 
   handleHeart() {
-    let call = () => {
-      increaseHeartByAd();
-    };
-    if (isWx()) {
-      openVideoWithCb(call);
-    } else {
-      call();
-    }
+    toggleModal("heartContainer", true);
   }
 
   update() {

@@ -200,6 +200,29 @@ export default class Player extends cc.Component {
 
     anim.pause();
     anim.play(key);
+    const db = cc.find("Canvas/default/Dragon_1_ske");
+    if (db) {
+      let dbKey = null;
+      switch (key) {
+        case "player_run":
+          dbKey = "walk";
+          break;
+        case "player_fall":
+          dbKey = "fall";
+          break;
+        case "player_jump":
+          dbKey = "jump";
+          break;
+        case "player_stand":
+          dbKey = "stand";
+          break;
+        default:
+          break;
+      }
+      if (dbKey) {
+        db.getComponent(dragonBones.ArmatureDisplay).playAnimation(dbKey, -1);
+      }
+    }
   }
 
   turnLeft() {

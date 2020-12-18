@@ -18,6 +18,7 @@ export default class Game extends cc.Component {
     unlockNextLevel();
     toggleModal("settleContainer", true, true);
   }
+  
   dispatchFailure() {
     toggleModal("settleContainer", true, false);
   }

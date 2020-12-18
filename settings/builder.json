@@ -1,5 +1,21 @@
 {
-  "excludeScenes": [],
+  "excludeScenes": [
+    "1656c628-24e8-4fdb-981f-e051cf3d574c",
+    "b5219fd3-8e26-42fc-b538-30be3c7148b6",
+    "54363615-f7bb-4c1a-bc44-bfe203c1e85d",
+    "f74f3c6b-2ecc-4bbb-a7d6-4cccc3cddf8a",
+    "4492c805-9b8a-4e4a-851c-b0b6a0447fec",
+    "30dce608-1725-443b-8bf1-0aabfa0ef278",
+    "3902fc63-43a0-43c8-91f7-df4d5b4be7b3",
+    "ce8096b7-a390-4005-99ad-e779634266f4",
+    "e63bd895-bb89-4000-acb4-3359ea2d2d2e",
+    "87b235fb-fb50-4dfd-8207-be446bb2a9df",
+    "9164fc85-8a6a-4d6a-b983-af2f00414b5c",
+    "1746414a-67a0-4f69-8c61-e1be33f84db4",
+    "28eba6d4-a33a-41d7-add8-69cd9736d909",
+    "03e22eda-5097-4e06-b0df-395caa3f0714",
+    "ad6fe056-d057-4132-b82c-86d1afde31a1"
+  ],
   "orientation": {
     "landscapeLeft": true,
     "landscapeRight": true,
@@ -7,7 +23,7 @@
     "upsideDown": false
   },
   "packageName": "org.cocos2d.helloworld",
-  "startScene": "03e22eda-5097-4e06-b0df-395caa3f0714",
+  "startScene": "af96486c-edc2-4f79-b5da-8167be239573",
   "title": "dmx",
   "webOrientation": "auto",
   "inlineSpriteFrames": true,

@@ -8,6 +8,7 @@ export default class Modal extends cc.Component {
   init() {
     this.container.map((item) => {
       const node = cc.instantiate(item);
+      node.active = false;
       this.node.addChild(node);
     });
   }

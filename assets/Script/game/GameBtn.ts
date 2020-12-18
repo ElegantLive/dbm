@@ -1,7 +1,12 @@
 import { openVideoWithCb } from "../platform/wxVideo";
 import { getCurrentLevel, getNextLevel } from "../state/Level";
-import { increaseCoin } from "../state/User";
-import { getAudioManager, loadLevelScene, toggleModal } from "../util/Common";
+import { increaseCoin, increaseHeartByAd } from "../state/User";
+import {
+  getAudioManager,
+  isWx,
+  loadLevelScene,
+  toggleModal,
+} from "../util/Common";
 import TipsModal from "./TipsModal";
 
 const { ccclass, property } = cc._decorator;
@@ -91,6 +96,17 @@ export default class GameBtn extends cc.Component {
           this.openTipImageMode();
         };
         if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+          openVideoWithCb(call);
+        } else {
+          call();
+        }
+        break;
+      case "getHeart":
+        call = () => {
+          this.closeModal("heartContainer");
+          increaseHeartByAd();
+        };
+        if (isWx()) {
           openVideoWithCb(call);
         } else {
           call();
