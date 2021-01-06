@@ -1,4 +1,5 @@
 import { getGroupLevel } from "../state/Level";
+import { getUser } from "../state/User";
 
 const { ccclass, property } = cc._decorator;
 
@@ -22,6 +23,11 @@ export default class SwipeLevelContainer extends cc.Component {
   onLoad() {
     this.init();
     this.defaultX = this.node.x;
+    const state = getUser();
+    if (state.hasOwnProperty("lastLv")) {
+      const { slv } = state.lastLv;
+      this.moveToSLv(slv);
+    }
   }
 
   public static getInstance() {
@@ -61,5 +67,18 @@ export default class SwipeLevelContainer extends cc.Component {
         this.moving = false;
       })
       .start();
+  }
+
+  /**
+   * moveToSLv
+   */
+  public moveToSLv(slv: number) {
+    if (!slv) return;
+
+    let movlength = parseInt(this.moveLength.toString());
+
+    const moveX = this.defaultX - movlength * (slv - 1);
+
+    this.node.x = moveX;
   }
 }

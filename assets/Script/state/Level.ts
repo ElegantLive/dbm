@@ -1,7 +1,7 @@
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
 import { LevelInfo } from "../level/LevelItem";
 
-const maxLevel = 14;
+const maxLevel = 13;
 export const LevelKey = "userLevel";
 
 export const initLevel = () => {

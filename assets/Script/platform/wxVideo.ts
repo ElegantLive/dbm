@@ -1,5 +1,5 @@
 //@ts-nocheck wx
-import { getAudioManager } from "../util/Common";
+import { getAudioManager, isWx } from "../util/Common";
 import { rewardedVideoAdunit } from "./wxConfig";
 
 let rewardVideo;
@@ -46,11 +46,10 @@ const setVideoScallBack = (call: Function) => {
   });
 };
 
-export const openVideoWithCb = async (call: Function) => {
-  if (cc.sys.platform != cc.sys.WECHAT_GAME) return;
+export const openWxVideoWithCb = async (call: Function) => {
+  if (!isWx()) return;
 
   let rewardedVideo = getRewardedVideoInstance();
-  rewardedVideo = null; // 加留存，不看广告
   if (!rewardedVideo) {
     call && call();
     return;

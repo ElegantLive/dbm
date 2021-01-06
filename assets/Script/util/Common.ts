@@ -1,9 +1,12 @@
+import Game from "../game/Game";
+import { ModelContainerType } from "../game/Modal";
 import AudioManager from "../public/AudioManager";
 import {
   getCurrentLevel,
   getNextLevel,
   initCurrentLevel,
 } from "../state/Level";
+import { setLastGameLevel } from "../state/User";
 import { hideLoading, showLoading } from "./GameCommon";
 
 export type Dir = {
@@ -36,7 +39,7 @@ export async function delay(time: number) {
 }
 
 export const toggleModal = (
-  contanier?: string,
+  contanier?: ModelContainerType,
   state?: boolean,
   gameState?: boolean
 ) => {
@@ -45,20 +48,55 @@ export const toggleModal = (
   if (true == state && !contanier) return;
 
   const modal = cc.find("Canvas/ui/modal");
-  if (contanier) {
-    const contanierNode = cc.find(contanier, modal);
-    if (contanier == "settleContainer") {
-      contanierNode
-        .getComponent("SettleModal")
-        .init(gameState ? "win" : "lose");
+  if (modal) {
+    if (contanier) {
+      modal.children.map((childNode) => {
+        childNode.active = false;
+      });
+      const contanierNode = cc.find(contanier, modal);
+      if (contanier == "settleContainer") {
+        contanierNode
+          .getComponent("SettleModal")
+          .init(gameState ? "win" : "lose");
+      }
+      if (contanier == "heartContainer") {
+        const state = Game.getGameState();
+        let InitType = "close";
+        if (state == "LOSE") {
+          InitType = "level";
+        }
+        contanierNode.getComponent("HeartModal").init(InitType);
+      }
+      if (contanier == "shareContainer") {
+        contanierNode
+          .getComponent("ShareModal")
+          .init(gameState ? "win" : "lose");
+      }
+
+      if (contanier != "settleContainer") {
+        const closeBtn = cc
+          .find("closeModel", contanierNode)
+          .getComponent("CloseBtn");
+
+        let closeCall = () => {};
+        if (contanier == "shareContainer") {
+          closeCall = () => {
+            toggleModal("settleContainer", state, gameState);
+          };
+        }
+        closeBtn.init(closeCall);
+      } else {
+        cc.find("closeModel", contanierNode).active = false;
+      }
+
+      contanierNode.active = state;
+    } else {
+      modal.children.map((childNode) => {
+        childNode.active = false;
+      });
     }
-    contanierNode.active = state;
-  } else {
-    modal.children.map((childNode) => {
-      childNode.active = false;
-    });
+    modal.active = state;
   }
-  modal.active = state;
 };
 
 export const loadLevelScene = (type: "current" | "next") => {
@@ -78,6 +116,7 @@ export const loadLevelScene = (type: "current" | "next") => {
   initCurrentLevel(lvInfo);
   showLoading();
   cc.director.loadScene(`level_${lvInfo.slv}_${lvInfo.lv}`, () => {
+    setLastGameLevel(lvInfo.slv, lvInfo.lv);
     hideLoading();
   });
 };
@@ -206,4 +245,20 @@ export const getAudioManager: () => AudioManager = () => {
 
 export const isWx = () => {
   return cc.sys.platform == cc.sys.WECHAT_GAME;
+};
+
+export const isTt = () => {
+  return cc.sys.platform == cc.sys.BYTEDANCE_GAME;
+};
+
+export const isVivo = () => {
+  return cc.sys.platform == cc.sys.VIVO_GAME;
+};
+
+export const isOppo = () => {
+  return cc.sys.platform == cc.sys.OPPO_GAME;
+};
+
+export const isWebGame = () => {
+  return cc.sys.isBrowser;
 };

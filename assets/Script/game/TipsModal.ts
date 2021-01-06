@@ -1,18 +1,11 @@
 import { toggleModal } from "../util/Common";
+import { ModelContainerType } from "./Modal";
 
 const { ccclass } = cc._decorator;
 
 @ccclass
 export default class TipsModal extends cc.Component {
   init(slv: number, lv: number) {
-    const closeNode = cc.find("close", this.node);
-    if (closeNode) {
-      closeNode.active = false;
-      setTimeout(() => {
-        closeNode.active = true;
-      }, 2000);
-    }
-
     const basePath = `image/tip/${slv}_${lv}`;
     cc.resources.load(
       basePath,
@@ -24,6 +17,6 @@ export default class TipsModal extends cc.Component {
         }
       }
     );
-    toggleModal(this.node.name, true);
+    toggleModal(this.node.name as ModelContainerType, true);
   }
 }

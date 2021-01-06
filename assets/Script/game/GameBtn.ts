@@ -1,13 +1,21 @@
-import { openVideoWithCb } from "../platform/wxVideo";
 import { getCurrentLevel, getNextLevel } from "../state/Level";
-import { increaseCoin, increaseHeartByAd } from "../state/User";
+import {
+  checkHeart,
+  descreaseHeart,
+  increaseCoin,
+  increaseHeartByAd,
+} from "../state/User";
 import {
   getAudioManager,
+  isTt,
   isWx,
   loadLevelScene,
   toggleModal,
 } from "../util/Common";
 import TipsModal from "./TipsModal";
+import { resumeRecord, stopRecord } from "../platform/ttGameRecord";
+import { ModelContainerType } from "./Modal";
+import { openVideoWithCb } from "../platform/RewardVideo";
 
 const { ccclass, property } = cc._decorator;
 
@@ -39,9 +47,15 @@ export default class GameBtn extends cc.Component {
         break;
       case "resume":
         this.resumeGame();
+        if (isTt()) {
+          resumeRecord();
+        }
         break;
       case "home":
         this.resume();
+        if (isTt()) {
+          stopRecord();
+        }
         cc.director.loadScene("home");
         break;
       case "level":
@@ -49,19 +63,17 @@ export default class GameBtn extends cc.Component {
         cc.director.loadScene("level");
         break;
       case "replay":
-        this.resume();
-        loadLevelScene("current");
+        if (isTt()) {
+          stopRecord();
+        }
+        this.replay();
         break;
       case "jump_level":
         this.resume();
         call = () => {
           loadLevelScene("next");
         };
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-          openVideoWithCb(call);
-        } else {
-          call();
-        }
+        openVideoWithCb(call);
         break;
       case "go_next_level":
         this.resume();
@@ -81,45 +93,48 @@ export default class GameBtn extends cc.Component {
             this.node.active = false;
           }
         };
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-          openVideoWithCb(call);
-        } else {
-          call();
-        }
+        openVideoWithCb(call);
         break;
       case "closeModal":
         this.resume();
+        if (isTt()) {
+          resumeRecord();
+        }
         this.closeModal();
         break;
       case "getTips":
         call = () => {
           this.openTipImageMode();
         };
-        if (cc.sys.platform == cc.sys.WECHAT_GAME) {
-          openVideoWithCb(call);
-        } else {
-          call();
-        }
+        openVideoWithCb(call);
         break;
       case "getHeart":
         call = () => {
-          this.closeModal("heartContainer");
+          this.closeModal();
           increaseHeartByAd();
         };
-        if (isWx()) {
-          openVideoWithCb(call);
-        } else {
-          call();
-        }
+        openVideoWithCb(call);
         break;
       default:
         break;
+    }
+  }
+  replay() {
+    if (checkHeart()) {
+      descreaseHeart();
+      this.resume();
+      loadLevelScene("current");
+    } else {
+      toggleModal("heartContainer", true, true);
     }
   }
 
   pauseGame() {
     // cc.audioEngine.pauseAll();
     cc.director.pause();
+    if (isTt()) {
+      stopRecord();
+    }
     this.openModal("pauseContainer");
   }
 
@@ -134,12 +149,12 @@ export default class GameBtn extends cc.Component {
   }
 
   closeModal(contanier?: string) {
-    toggleModal(contanier, false);
+    toggleModal(contanier as ModelContainerType, false);
   }
 
   openModal(contanier: string) {
     if (!contanier) return;
-    toggleModal(contanier, true);
+    toggleModal(contanier as ModelContainerType, true);
   }
 
   openTipImageMode() {

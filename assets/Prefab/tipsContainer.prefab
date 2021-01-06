@@ -27,7 +27,7 @@
         "__id__": 14
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 43
@@ -1000,6 +1000,7 @@
     },
     "_enabled": true,
     "type": "closeModal",
+    "handle": "click",
     "_id": ""
   },
   {
@@ -1569,6 +1570,7 @@
     },
     "_enabled": true,
     "type": "getTips",
+    "handle": "click",
     "_id": ""
   },
   {

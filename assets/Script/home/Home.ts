@@ -1,5 +1,7 @@
 import { initState } from "../state/Init";
+import { isTt } from "../util/Common";
 import { preLoadAllLevelScene, preLoadAllResources } from "../util/Load";
+import { isZsLogin, loadZsCfg, loadZsLogin } from "../util/ZsLoad";
 
 const { ccclass, property } = cc._decorator;
 
@@ -20,6 +22,12 @@ export default class Home extends cc.Component {
         }
       }
     );
-    initState();
+    if (isTt()) {
+      if (!isZsLogin()) {
+        loadZsCfg(() => {
+          loadZsLogin();
+        });
+      }
+    }
   }
 }

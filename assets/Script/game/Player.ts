@@ -1,5 +1,6 @@
+import { stopRecord } from "../platform/ttGameRecord";
 import AudioManager from "../public/AudioManager";
-import { compileDir, delay, Dir, Dirr } from "../util/Common";
+import { compileDir, delay, Dir, Dirr, isTt } from "../util/Common";
 import CWorld from "./World";
 
 const { ccclass, property } = cc._decorator;
@@ -536,6 +537,11 @@ export default class Player extends cc.Component {
   }
 
   async awaitDieCall() {
+    if (isTt()) {
+      setTimeout(() => {
+        stopRecord();
+      }, 1800);
+    }
     await delay(2000);
     cc.director
       .getScene()
@@ -551,6 +557,9 @@ export default class Player extends cc.Component {
       this.animationPlay("player_stand");
       princess.getComponent(cc.Animation).play("princess_shake");
       princess.removeAllChildren();
+      if (isTt()) {
+        stopRecord();
+      }
       this.winTween = cc
         .tween(this.node)
         .to(0.1, { y: princess.y })

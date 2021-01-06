@@ -1,11 +1,13 @@
 // @ts-nocheck wx
 
+import { isWx } from "../util/Common";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class WxOpenShare extends cc.Component {
   onLoad() {
-    if (cc.sys.platform == cc.sys.WECHAT_GAME) {
+    if (isWx()) {
       wx.showShareMenu({ withShareTicket: true });
       wx.onShareAppMessage(function (res) {
         return {

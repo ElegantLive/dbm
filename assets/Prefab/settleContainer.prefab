@@ -27,7 +27,7 @@
         "__id__": 11
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 51
@@ -896,7 +896,8 @@
       "__id__": 12
     },
     "_enabled": true,
-    "type": "home",
+    "type": "level",
+    "handle": "click",
     "_id": ""
   },
   {
@@ -1466,6 +1467,7 @@
     },
     "_enabled": true,
     "type": "jump_level",
+    "handle": "click",
     "_id": ""
   },
   {
@@ -1890,6 +1892,7 @@
     },
     "_enabled": true,
     "type": "replay",
+    "handle": "click",
     "_id": ""
   },
   {

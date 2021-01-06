@@ -1,16 +1,45 @@
+import { openVideoWithCb } from "../platform/RewardVideo";
 import { getCfgVal, initByStorage, setCfgVal } from "../util/Storage";
 
 export const UserKey = "userState";
 
-export interface UserState {
+export interface UserState extends Object {
   skin: number;
   has_skin: number[];
   coin: number;
   heart: number;
+  unlimitLife: boolean;
+  lastLv: {
+    slv: number;
+    lv: number;
+  };
 }
 
-const resetHeart = 59;
-const maxHeart = 3;
+const resetHeart = 89;
+export const maxHeart = 6;
+export const UNLIMIT_LIFT_HEART = "∞";
+
+let unlimitLifeNum = 0;
+export const needAdNum = 5;
+
+export const getUnLimitLifeNum = () => {
+  return unlimitLifeNum;
+};
+
+export const addUnlimitLifeNum = () => {
+  if (unlimitLifeNum >= needAdNum) {
+    let currentUserState = getUser();
+    currentUserState.unlimitLife = true;
+    setCfgVal(UserKey, currentUserState);
+    return;
+  }
+  unlimitLifeNum++;
+  if (unlimitLifeNum >= needAdNum) {
+    let currentUserState = getUser();
+    currentUserState.unlimitLife = true;
+    setCfgVal(UserKey, currentUserState);
+  }
+};
 
 let addTime: number = resetHeart;
 
@@ -37,9 +66,18 @@ export const initUser = () => {
       has_skin: [0],
       coin: 0,
       heart: maxHeart,
+      unlimitLife: false,
+      lastLv: {
+        lv: 1,
+        slv: 1,
+      },
     };
     initByStorage(UserKey, currentUserState);
     return;
+  }
+
+  if (currentUserState.unlimitLife) {
+    unlimitLifeNum = needAdNum;
   }
 
   initAddTimer();
@@ -48,7 +86,7 @@ export const initUser = () => {
 export const initAddTimer = () => {
   if (!addTimer) {
     addTimer = setInterval(() => {
-      if (getUser().heart >= 5) {
+      if (getUser().heart >= maxHeart) {
         if (getAddTime() <= resetHeart) {
           resetAddTime();
         }
@@ -83,17 +121,37 @@ export const increaseHeart = () => {
 
 export const increaseHeartByAd = () => {
   let state = getUser();
-  state.heart = 5; // 直接补满
+  state.heart = maxHeart; // 直接补满
   setCfgVal(UserKey, state);
   resetAddTime();
 };
 
 export const descreaseHeart = () => {
   let state = getUser();
+  if (state.unlimitLife) return;
   state.heart--;
   setCfgVal(UserKey, state);
 };
 
 export const checkHeart = () => {
-  return getUser().heart > 0;
+  const state = getUser();
+  if (state.unlimitLife) return true;
+  return state.heart > 0;
+};
+
+export const setLastGameLevel = (slv: number, lv: number) => {
+  let state = getUser();
+  state.lastLv = {
+    slv,
+    lv,
+  };
+  setCfgVal(UserKey, state);
+};
+
+export const countUnlimitLife = () => {
+  let call = () => {
+    addUnlimitLifeNum();
+  };
+
+  openVideoWithCb(call);
 };
