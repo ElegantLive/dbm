@@ -33,7 +33,7 @@ export default class LevelItem extends cc.Component {
     getAudioManager().playOnceMusic("button");
     if (status != "lock") {
       if (!checkHeart()) {
-        toggleModal("heartContainer", true);
+        toggleModal("heartContainer", true, false);
         return;
       }
       descreaseHeart();

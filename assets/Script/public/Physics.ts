@@ -3,7 +3,7 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Physics extends cc.Component {
   @property()
-  debug = false;
+  debug: boolean = false;
 
   @property()
   gravity: cc.Vec2 = cc.v2(0, -1100);

@@ -519,7 +519,10 @@ export default class Player extends cc.Component {
   dieJump() {
     if (this.isDead) return;
     this.animationPlay("player_die");
-    cc.director.getCollisionManager().enabled = false;
+    this.node.removeComponent(cc.BoxCollider);
+    this.node.removeComponent(cc.PhysicsBoxCollider);
+    this.node.removeComponent(cc.RigidBody);
+    // cc.director.getCollisionManager().enabled = false;
     // cc.audioEngine.play(this.dieAudio, false, 1);
     // this.anim.play("player_die");
     this._speed.y = this.jumpSpeed;

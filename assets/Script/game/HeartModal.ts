@@ -2,7 +2,7 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class HeartModal extends cc.Component {
-  init(type: "home" | "close" | "level") {
+  init(type: "home" | "close" | "level", state: boolean = false) {
     const btnGroup = cc.find("btnGroup", this.node),
       leftBtn = cc.find("left", btnGroup),
       middleBtn = cc.find("middle", btnGroup);
@@ -18,6 +18,10 @@ export default class HeartModal extends cc.Component {
     if (type == "close") {
       leftBtn.getComponent("GameBtn").type = "closeModal";
     }
+
+    middleBtn.getComponent("GameBtn").type = state
+      ? "getHeartReplay"
+      : "getHeart";
 
     if (middleBtn.active) {
       const act = { scale: 1.1 },

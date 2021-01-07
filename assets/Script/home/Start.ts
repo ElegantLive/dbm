@@ -24,6 +24,7 @@ export default class Start extends cc.Component {
     this.node.on("click", this.startHandle, this);
     cc.director.preloadScene("level");
   }
+
   startHandle() {
     getAudioManager().playOnceMusic("button");
     showLoading();

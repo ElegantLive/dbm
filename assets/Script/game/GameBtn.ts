@@ -115,6 +115,14 @@ export default class GameBtn extends cc.Component {
         };
         openVideoWithCb(call);
         break;
+      case "getHeartReplay":
+        call = () => {
+          this.closeModal();
+          increaseHeartByAd();
+          this.replay();
+        };
+        openVideoWithCb(call);
+        break;
       default:
         break;
     }

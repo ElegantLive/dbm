@@ -1,4 +1,3 @@
-import { initState } from "../state/Init";
 import { isTt } from "../util/Common";
 import { preLoadAllLevelScene, preLoadAllResources } from "../util/Load";
 import { isZsLogin, loadZsCfg, loadZsLogin } from "../util/ZsLoad";

@@ -24,7 +24,7 @@ export const initLevel = () => {
     }
 
     initByStorage(LevelKey, level);
-    return;
+    return true;
   }
   if (currentLevelState.length < maxLevel) {
     // 需要加关卡
@@ -49,7 +49,7 @@ export const initLevel = () => {
 
     setCfgVal(LevelKey, level);
   }
-  return;
+  return true;
 };
 
 export const getGroupLevel = () => {

@@ -65,7 +65,8 @@ export const toggleModal = (
         if (state == "LOSE") {
           InitType = "level";
         }
-        contanierNode.getComponent("HeartModal").init(InitType);
+
+        contanierNode.getComponent("HeartModal").init(InitType, gameState);
       }
       if (contanier == "shareContainer") {
         contanierNode
@@ -95,6 +96,7 @@ export const toggleModal = (
         childNode.active = false;
       });
     }
+    cc.find("bg", modal).active = state;
     modal.active = state;
   }
 };

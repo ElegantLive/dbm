@@ -73,7 +73,7 @@ export const initUser = () => {
       },
     };
     initByStorage(UserKey, currentUserState);
-    return;
+    return true;
   }
 
   if (currentUserState.unlimitLife) {
@@ -81,6 +81,8 @@ export const initUser = () => {
   }
 
   initAddTimer();
+
+  return true;
 };
 
 export const initAddTimer = () => {
